@@ -20,6 +20,7 @@ class InferenceResult:
     deepsc_metrics: dict[str, float]
     baseline_metrics: dict[str, float]
     latency_ms: float
+    baseline_latency_ms: float
 
 
 def run_inference(
@@ -36,11 +37,16 @@ def run_inference(
     with torch.no_grad():
         reconstruction = model(image, channel=channel).clamp(0, 1)
     latency_ms = (time.perf_counter() - start) * 1000.0
+
+    start_baseline = time.perf_counter()
     baseline = jpeg_baseline_tensor(image, channel, quality=jpeg_quality).clamp(0, 1)
+    baseline_latency_ms = (time.perf_counter() - start_baseline) * 1000.0
+
     return InferenceResult(
         reconstruction=reconstruction.detach().cpu(),
         baseline=baseline.detach().cpu(),
         deepsc_metrics=tensor_metrics(image.detach().cpu(), reconstruction.detach().cpu()),
         baseline_metrics=tensor_metrics(image.detach().cpu(), baseline.detach().cpu()),
         latency_ms=latency_ms,
+        baseline_latency_ms=baseline_latency_ms,
     )

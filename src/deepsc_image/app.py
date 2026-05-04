@@ -153,6 +153,7 @@ def main() -> None:
         st.image(tensor_to_pil(result.baseline), use_container_width=True)
         st.metric("PSNR", f"{result.baseline_metrics['psnr']:.2f} dB")
         st.metric("SSIM", f"{result.baseline_metrics['ssim']:.4f}")
+        st.metric("基线延迟", f"{result.baseline_latency_ms:.1f} ms")
     st.markdown("""
     **说明**：随机初始化模型只能验证软件链路是否通畅，不能代表 DeepSC 性能。请通过训练 CLI 生成 checkpoint 后再进行正式性能对比。
     """)

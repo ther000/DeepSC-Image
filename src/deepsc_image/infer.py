@@ -52,6 +52,7 @@ def main() -> None:
         "deepsc": result.deepsc_metrics,
         "jpeg_baseline": result.baseline_metrics,
         "latency_ms": result.latency_ms,
+        "baseline_latency_ms": result.baseline_latency_ms,
     }, ensure_ascii=False, indent=2))
 
 
