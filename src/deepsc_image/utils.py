@@ -5,7 +5,7 @@ from __future__ import annotations
 import random
 import inspect
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any, Mapping, cast
 
 import numpy as np
 import torch
@@ -39,7 +39,7 @@ def resolve_device(name: str | None = None) -> torch.device:
 def pil_to_tensor(image: Image.Image, image_size: int | None = None) -> torch.Tensor:
     image = image.convert("RGB")
     if image_size is not None:
-        image = image.resize((image_size, image_size), Image.BICUBIC)
+        image = image.resize((image_size, image_size), Image.Resampling.BICUBIC)
     array = np.asarray(image).astype("float32") / 255.0
     tensor = torch.from_numpy(array).permute(2, 0, 1).unsqueeze(0)
     return tensor.contiguous()
@@ -63,11 +63,13 @@ def save_checkpoint(path: str | Path, model: torch.nn.Module, extra: dict[str, A
 
 
 def _torch_load_weights_only(path: Path, device: torch.device) -> Any:
-    """Load trusted project checkpoints with PyTorch's safer tensor-only mode when available."""
-    load_kwargs: dict[str, Any] = {"map_location": device}
-    if "weights_only" in inspect.signature(torch.load).parameters:
-        load_kwargs["weights_only"] = True
-    return torch.load(path, **load_kwargs)
+    """Load trusted project checkpoints safely with PyTorch's weights_only mode."""
+    if "weights_only" not in inspect.signature(torch.load).parameters:
+        raise ValueError("Safe checkpoint loading requires PyTorch weights_only support.")
+    try:
+        return torch.load(path, map_location=device, weights_only=True)
+    except TypeError as exc:
+        raise ValueError("Safe checkpoint loading requires PyTorch weights_only support.") from exc
 
 
 def _is_state_dict(value: Any) -> bool:
@@ -78,7 +80,9 @@ def _is_state_dict(value: Any) -> bool:
 
 def _extract_model_state(checkpoint: Any, path: Path) -> Mapping[str, torch.Tensor]:
     if _is_state_dict(checkpoint):
-        return checkpoint
+        # After validation, we know checkpoint is a Mapping[str, Tensor]
+        validated = cast(Mapping[str, torch.Tensor], checkpoint)
+        return {k: v for k, v in validated.items()}
     if not isinstance(checkpoint, Mapping):
         raise ValueError(f"Checkpoint must be a state_dict or mapping payload: {path}")
     unexpected_keys = set(checkpoint) - PROJECT_CHECKPOINT_KEYS
@@ -89,8 +93,37 @@ def _extract_model_state(checkpoint: Any, path: Path) -> Mapping[str, torch.Tens
     state = checkpoint["model_state"]
     if not _is_state_dict(state):
         raise ValueError(f"Checkpoint 'model_state' must map parameter names to tensors: {path}")
-    return state
+    # After validation, we know state is a Mapping[str, Tensor]
+    validated_state = cast(Mapping[str, torch.Tensor], state)
+    return {k: v for k, v in validated_state.items()}
 
+
+def load_checkpoint_config(path: str | Path, device: torch.device) -> dict[str, Any] | None:
+    """Safely load a checkpoint and extract its config if it is a project checkpoint."""
+    checkpoint_path = Path(path)
+    try:
+        checkpoint = _torch_load_weights_only(checkpoint_path, device)
+    except Exception as exc:
+        if isinstance(exc, ValueError) and "weights_only support" in str(exc):
+            raise
+        raise ValueError(
+            f"Unable to load checkpoint safely: {checkpoint_path}. Only use trusted checkpoints saved by this project."
+        ) from exc
+    
+    if _is_state_dict(checkpoint):
+        return None
+    
+    # Validate the checkpoint structure (raises ValueError if invalid)
+    _extract_model_state(checkpoint, checkpoint_path)
+    
+    config = checkpoint.get("config")
+    if config is not None:
+        if not isinstance(config, Mapping):
+            raise ValueError(f"Checkpoint config must be a mapping: {checkpoint_path}")
+        # After validation, we know config is a Mapping[str, Any]
+        validated_config = cast(Mapping[str, Any], config)
+        return {k: v for k, v in validated_config.items()}
+    return None
 
 def load_checkpoint(path: str | Path, model: torch.nn.Module, device: torch.device) -> None:
     """Load a checkpoint produced by this project or a raw state_dict.
@@ -104,9 +137,9 @@ def load_checkpoint(path: str | Path, model: torch.nn.Module, device: torch.devi
     checkpoint_path = Path(path)
     try:
         checkpoint = _torch_load_weights_only(checkpoint_path, device)
-    except TypeError:
-        checkpoint = torch.load(checkpoint_path, map_location=device)
     except Exception as exc:
+        if isinstance(exc, ValueError) and "weights_only support" in str(exc):
+            raise
         raise ValueError(
             f"Unable to load checkpoint safely: {checkpoint_path}. Only use trusted checkpoints saved by this project."
         ) from exc

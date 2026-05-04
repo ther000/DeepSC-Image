@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Mapping
 
 import streamlit as st
 from PIL import Image, UnidentifiedImageError
@@ -10,23 +11,46 @@ from PIL import Image, UnidentifiedImageError
 from deepsc_image.channels import ChannelConfig
 from deepsc_image.inference import run_inference
 from deepsc_image.model import DeepSCImageModel
-from deepsc_image.utils import load_checkpoint, load_yaml, pil_to_tensor, resolve_device, tensor_to_pil
+from deepsc_image.utils import load_checkpoint, load_checkpoint_config, load_yaml, pil_to_tensor, resolve_device, tensor_to_pil
 
 
 @st.cache_resource
 def load_model(checkpoint: str | None, semantic_channels: int, base_channels: int, device_name: str) -> tuple[DeepSCImageModel, str]:
     device = resolve_device(device_name)
-    model = DeepSCImageModel(semantic_channels=semantic_channels, base_channels=base_channels).to(device)
     status = ""
+    
     if checkpoint:
         try:
+            # 1. Parse config safely
+            chk_config = load_checkpoint_config(checkpoint, device)
+            chk_sem, chk_base = semantic_channels, base_channels
+            if chk_config and "model" in chk_config:
+                chk_model_cfg = chk_config["model"]
+                if not isinstance(chk_model_cfg, Mapping):
+                    raise ValueError(f"Checkpoint config 'model' must be a mapping, got {type(chk_model_cfg).__name__}")
+                chk_sem_value = chk_model_cfg.get("semantic_channels", semantic_channels)
+                chk_base_value = chk_model_cfg.get("base_channels", base_channels)
+                if not isinstance(chk_sem_value, (int, float, str)):
+                    raise ValueError(f"Checkpoint config 'model.semantic_channels' must be numeric, got {type(chk_sem_value).__name__}")
+                if not isinstance(chk_base_value, (int, float, str)):
+                    raise ValueError(f"Checkpoint config 'model.base_channels' must be numeric, got {type(chk_base_value).__name__}")
+                chk_sem = int(chk_sem_value)
+                chk_base = int(chk_base_value)
+                
+            # 2. Construct model with parsed config
+            model = DeepSCImageModel(semantic_channels=chk_sem, base_channels=chk_base).to(device)
+            
+            # 3. Load weights
             load_checkpoint(checkpoint, model, device)
-            status = f"已加载 checkpoint: {checkpoint}"
+            status = f"已加载 checkpoint: {checkpoint} (C={chk_sem}, base={chk_base})"
         except Exception as e:
+            # Fallback model with GUI defaults
+            model = DeepSCImageModel(semantic_channels=semantic_channels, base_channels=base_channels).to(device)
             status = f"加载 checkpoint 失败: {e}。当前使用随机初始化模型。"
-            checkpoint = None
-    if not checkpoint:
+    else:
+        model = DeepSCImageModel(semantic_channels=semantic_channels, base_channels=base_channels).to(device)
         status = "未提供 checkpoint：当前使用随机初始化模型，仅用于功能演示；请加载训练权重获得有效重构质量。"
+        
     model.eval()
     return model, status
 
