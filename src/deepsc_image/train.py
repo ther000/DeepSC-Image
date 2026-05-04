@@ -207,11 +207,15 @@ def _draw_loss_curve(path: Path, history: list[dict[str, Any]]) -> None:
     image.save(path)
 
 
-def _write_training_artifacts(output_dir: Path, history: list[dict[str, Any]], summary: dict[str, Any]) -> None:
+def _write_history_artifacts(output_dir: Path, history: list[dict[str, Any]]) -> None:
     _write_history_csv(output_dir / "history.csv", history)
     _write_json(output_dir / "history.json", history)
-    _write_json(output_dir / "summary.json", summary)
     _draw_loss_curve(output_dir / "loss_curve.png", history)
+
+
+def _write_training_artifacts(output_dir: Path, history: list[dict[str, Any]], summary: dict[str, Any]) -> None:
+    _write_history_artifacts(output_dir, history)
+    _write_json(output_dir / "summary.json", summary)
 
 
 def _run_experiment(
@@ -305,6 +309,7 @@ def _run_experiment(
                 "batches": batch_count,
             }
         )
+        _write_history_artifacts(output_dir, history)
         checkpoint_extra = {"epoch": epoch, "config": experiment_cfg, "bandwidth_estimate": bandwidth}
         save_checkpoint(
             output_dir / "last_model.pth",

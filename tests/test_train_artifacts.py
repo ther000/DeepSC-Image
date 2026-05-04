@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import json
 from pathlib import Path
@@ -30,6 +30,32 @@ def test_experiment_output_dir_includes_safe_run_fields() -> None:
     assert "base_8" in name
     assert "img_32" in name
     assert "seed_123" in name
+
+
+def test_history_artifacts_can_refresh_without_summary(tmp_path: Path) -> None:
+    history_one = [
+        {"epoch": 1, "train_loss": 0.25, "psnr": 12.5, "ssim": 0.4, "batches": 2},
+    ]
+
+    train._write_history_artifacts(tmp_path, history_one)
+
+    assert (tmp_path / "history.csv").is_file()
+    assert (tmp_path / "history.json").is_file()
+    assert (tmp_path / "loss_curve.png").is_file()
+    assert not (tmp_path / "summary.json").exists()
+    assert json.loads((tmp_path / "history.json").read_text(encoding="utf-8")) == history_one
+
+    history_two = [
+        *history_one,
+        {"epoch": 2, "train_loss": 0.2, "psnr": 13.0, "ssim": 0.45, "batches": 2},
+    ]
+
+    train._write_history_artifacts(tmp_path, history_two)
+
+    assert json.loads((tmp_path / "history.json").read_text(encoding="utf-8")) == history_two
+    assert len((tmp_path / "history.csv").read_text(encoding="utf-8").splitlines()) == 3
+    assert (tmp_path / "loss_curve.png").stat().st_size > 0
+    assert not (tmp_path / "summary.json").exists()
 
 
 def test_training_artifact_writers(tmp_path: Path) -> None:
