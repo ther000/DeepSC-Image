@@ -30,8 +30,8 @@
 能够实时展示“发送原图”、“DeepSC 重构图”和“传统方案重构图”的对比结果。
 界面中自动计算并显示PSNR、SSIM等关键性能指标。
 性能量化指标
-在极低信噪比（如）的AWGN信道中，DeepSC 系统的PSNR必须优于基线方案至少。
-在普通PC上，端到端推理延迟不超过。
+在极低信噪比（如）的AWGN信道中，DeepSC 系统的PSNR必须优于基线方案至少1.5 dB。
+在普通PC上，端到端推理延迟不超过1.5秒。
 模型训练的Loss曲线收敛稳定，最终收敛值达到预期水平。
 非技术因素分析
 隐私与安全性：分析语义特征传输相较比特流在被窃听环境下的解码难度与潜在隐私保护能力。
@@ -40,7 +40,7 @@
 H. Xie, Z. Qin, G. Y. Li and B. -H. Juang, "Deep Learning Enabled Semantic Communication Systems," in IEEE Transactions on Signal Processing, vol. 69, pp. 2663-2675, 2021, doi: 10.1109/TSP.2021.3071210.
 Qin, Zhijin et al. “Semantic Communications: Principles and Challenges.” ArXiv abs/2201.01389 (2021): n. pag.
 E. Bourtsoulatze, D. Burth Kurka and D. Gündüz, "Deep Joint Source-Channel Coding for Wireless Image Transmission," in IEEE Transactions on Cognitive Communications and Networking, vol. 5, no. 3, pp. 567-579, Sept. 2019, doi: 10.1109/TCCN.2019.2919300.
-Pytorch. PyTorch Documentation and Tutorials [EB/OL]. https://pytorch.org/docs/stable/index.html.
+Pytorch. PyTorch Documentation and Tutorials \[EB/OL]. https://pytorch.org/docs/stable/index.html.
 指导教师签字：
 （校外加盖公章）
 2022
@@ -69,3 +69,4 @@ Pytorch. PyTorch Documentation and Tutorials [EB/OL]. https://pytorch.org/docs/s
 月
 22
 日
+
