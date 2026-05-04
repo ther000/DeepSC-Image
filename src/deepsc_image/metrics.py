@@ -48,6 +48,8 @@ def psnr_torch(x: torch.Tensor, y: torch.Tensor, max_value: float = 1.0) -> torc
 
 def tensor_metrics(reference: torch.Tensor, reconstruction: torch.Tensor) -> dict[str, float]:
     with torch.no_grad():
+        reference = reference.float()
+        reconstruction = reconstruction.float()
         psnr = psnr_torch(reconstruction.clamp(0, 1), reference.clamp(0, 1)).item()
         ssim = ssim_torch(reconstruction.clamp(0, 1), reference.clamp(0, 1)).item()
     if not math.isfinite(psnr):
