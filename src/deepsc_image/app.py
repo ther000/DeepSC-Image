@@ -17,6 +17,7 @@ from deepsc_image.utils import load_checkpoint, load_yaml, pil_to_tensor, resolv
 def load_model(checkpoint: str | None, semantic_channels: int, base_channels: int, device_name: str) -> tuple[DeepSCImageModel, str]:
     device = resolve_device(device_name)
     model = DeepSCImageModel(semantic_channels=semantic_channels, base_channels=base_channels).to(device)
+    status = ""
     if checkpoint:
         try:
             load_checkpoint(checkpoint, model, device)
@@ -53,8 +54,24 @@ def main() -> None:
         trusted_dir = Path(ui_cfg.get("trusted_checkpoint_dir", "outputs"))
         available_checkpoints = []
         if trusted_dir.exists() and trusted_dir.is_dir():
-            available_checkpoints = [str(p) for p in trusted_dir.rglob("*.pth")]
+            available_checkpoints = sorted([str(p) for p in trusted_dir.rglob("*.pth")])
         
+        def format_checkpoint_path(path_str: str) -> str:
+            if path_str == "随机初始化模型 (无 Checkpoint)":
+                return path_str
+            p = Path(path_str)
+            parts = p.parts
+            if len(parts) >= 2:
+                run_group = p.parent.parent.name if len(parts) >= 3 else ""
+                if run_group.startswith("train_cifar10_"):
+                    run_group = run_group.removeprefix("train_cifar10_")
+                experiment_parts = [part for part in p.parent.name.split("__") if not part.startswith("ts_")]
+                experiment_name = " | ".join(experiment_parts) or p.parent.name
+                if len(parts) >= 3:
+                    return f"{run_group}/{experiment_name}/{p.name}"
+                return f"{experiment_name}/{p.name}"
+            return str(p)
+
         checkpoint = None
         use_manual_checkpoint = st.checkbox("使用非受信任的本地模型路径 (高级/危险)")
         if use_manual_checkpoint:
@@ -62,9 +79,10 @@ def main() -> None:
             checkpoint = st.text_input("Checkpoint 路径", value=str(cfg.get("checkpoint") or "")) or None
         else:
             options = ["随机初始化模型 (无 Checkpoint)"] + available_checkpoints
-            selected = st.selectbox("选择 Checkpoint", options)
+            selected = st.selectbox("选择 Checkpoint", options, format_func=format_checkpoint_path)
             if selected != options[0]:
                 checkpoint = selected
+                st.caption(f"**选中的 Checkpoint 路径**：\n`{checkpoint}`")
     model_cfg = cfg.get("model", {})
     model, status = load_model(checkpoint, int(model_cfg.get("semantic_channels", 32)), int(model_cfg.get("base_channels", 32)), str(cfg.get("device", "auto")))
     st.info(status)
