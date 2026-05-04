@@ -37,6 +37,7 @@ DeepSC-Image/
 │   ├── evaluate.py
 │   ├── infer.py
 │   ├── inference.py
+│   ├── interactive_cli.py
 │   ├── losses.py
 │   ├── metrics.py
 │   ├── model.py
@@ -103,6 +104,14 @@ $env:PYTHONPATH="src"
 python -m deepsc_image.train --config configs/train_cifar10_awgn.yaml
 python -m deepsc_image.train --config configs/train_cifar10_rayleigh.yaml
 ```
+
+也可以在命令行交互式设置本次训练参数：
+
+```powershell
+python -m deepsc_image.train --config configs/train_cifar10_awgn.yaml --interactive
+```
+
+交互模式会先读取 YAML，再以当前配置值作为默认值提示输入；直接回车保留默认值。交互结果只影响本次运行，不会改写 `configs/*.yaml`。训练输出目录中的 `config.yaml` 会记录本次实际使用的配置，便于复现实验。
 
 快速连通性检查可临时减少训练轮数：
 
@@ -186,6 +195,14 @@ python -m deepsc_image.evaluate --config configs/eval_kodak.yaml --checkpoint ou
 ```
 
 评估会按配置中的 SNR 列表输出 DeepSC 与 JPEG 基线的 PSNR/SSIM，并保存 `metrics.json`。若未提供 checkpoint，程序会提示正在评估随机初始化模型，这仅适合检查流程，不适合写入性能结论。
+
+也可以在命令行交互式设置本次评估参数：
+
+```powershell
+python -m deepsc_image.evaluate --config configs/eval_kodak.yaml --interactive
+```
+
+交互模式同样只修改本次运行的内存配置，不会改写 YAML 文件。`--checkpoint`、`--snr-db`、`--monte-carlo-samples`、`--output-dir` 等参数也可以直接通过命令行覆盖。
 
 `configs/eval_kodak.yaml` 中的 `evaluation.monte_carlo_samples` 控制每张图片、每个 SNR 的重复随机信道采样次数。`metrics.json` 会记录 `samples`、`monte_carlo_samples` 和总 `repetitions`，PSNR/SSIM 按所有重复结果平均。
 

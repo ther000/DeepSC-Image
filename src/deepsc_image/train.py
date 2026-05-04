@@ -23,14 +23,70 @@ from .data import build_dataset, unwrap_batch
 from .losses import MixedMseSsimLoss
 from .metrics import tensor_metrics
 from .model import DeepSCImageModel
+from .interactive_cli import apply_train_interactive_config, set_nested
 from .utils import estimate_semantic_bandwidth, load_yaml, resolve_device, save_checkpoint, set_seed
 
 
-def parse_args() -> argparse.Namespace:
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Train DeepSC image model")
     parser.add_argument("--config", default="configs/train_cifar10_awgn.yaml", help="YAML config path")
+    parser.add_argument("--interactive", "-i", action="store_true", help="Prompt for training parameters")
+    parser.add_argument("--seed", type=int, default=None)
+    parser.add_argument("--device", default=None)
+    parser.add_argument("--dataset", choices=("cifar10", "image_folder"), default=None)
+    parser.add_argument("--data-root", default=None)
+    parser.add_argument("--image-size", type=int, default=None)
+    parser.add_argument("--download", action="store_true")
+    parser.add_argument("--semantic-channels", type=int, nargs="+", default=None)
+    parser.add_argument("--base-channels", type=int, default=None)
+    parser.add_argument("--channel", choices=("none", "awgn", "rayleigh"), default=None)
+    parser.add_argument("--snr-db", type=float, nargs="+", default=None, help="One or more training SNR values")
     parser.add_argument("--epochs", type=int, default=None, help="Override epoch count")
-    return parser.parse_args()
+    parser.add_argument("--batch-size", type=int, default=None)
+    parser.add_argument("--learning-rate", type=float, default=None)
+    parser.add_argument("--weight-decay", type=float, default=None)
+    parser.add_argument("--ssim-weight", type=float, default=None)
+    parser.add_argument("--output-dir", default=None)
+    return parser.parse_args(argv)
+
+
+def build_config_from_args(args: argparse.Namespace) -> dict[str, Any]:
+    cfg = load_yaml(args.config)
+    if args.seed is not None:
+        set_nested(cfg, ["seed"], args.seed)
+    if args.device is not None:
+        set_nested(cfg, ["device"], args.device)
+    if args.dataset is not None:
+        set_nested(cfg, ["dataset", "name"], args.dataset)
+    if args.data_root is not None:
+        set_nested(cfg, ["dataset", "root"], args.data_root)
+    if args.image_size is not None:
+        set_nested(cfg, ["dataset", "image_size"], args.image_size)
+    if args.download:
+        set_nested(cfg, ["dataset", "download"], True)
+    if args.semantic_channels is not None:
+        set_nested(cfg, ["model", "semantic_channels"], list(args.semantic_channels))
+    if args.base_channels is not None:
+        set_nested(cfg, ["model", "base_channels"], args.base_channels)
+    if args.channel is not None:
+        set_nested(cfg, ["channel", "type"], args.channel)
+    if args.snr_db is not None:
+        set_nested(cfg, ["channel", "train_snr_db"], list(args.snr_db))
+    if args.epochs is not None:
+        set_nested(cfg, ["training", "epochs"], args.epochs)
+    if args.batch_size is not None:
+        set_nested(cfg, ["training", "batch_size"], args.batch_size)
+    if args.learning_rate is not None:
+        set_nested(cfg, ["training", "learning_rate"], args.learning_rate)
+    if args.weight_decay is not None:
+        set_nested(cfg, ["training", "weight_decay"], args.weight_decay)
+    if args.ssim_weight is not None:
+        set_nested(cfg, ["training", "ssim_weight"], args.ssim_weight)
+    if args.output_dir is not None:
+        set_nested(cfg, ["training", "output_dir"], args.output_dir)
+    if args.interactive:
+        apply_train_interactive_config(cfg)
+    return cfg
 
 
 def _semantic_channel_values(model_cfg: dict[str, Any]) -> list[int]:
@@ -291,8 +347,8 @@ def run_training(cfg: dict[str, Any], epochs: int | None = None) -> None:
 
 def main() -> None:
     args = parse_args()
-    cfg = load_yaml(args.config)
-    run_training(cfg, epochs=args.epochs)
+    cfg = build_config_from_args(args)
+    run_training(cfg)
 
 
 if __name__ == "__main__":

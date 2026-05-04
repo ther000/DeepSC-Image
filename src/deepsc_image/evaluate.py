@@ -15,14 +15,58 @@ from .channels import ChannelConfig
 from .data import build_dataset, unwrap_batch
 from .metrics import tensor_metrics
 from .model import DeepSCImageModel
+from .interactive_cli import apply_eval_interactive_config, set_nested
 from .utils import estimate_semantic_bandwidth, load_checkpoint, load_yaml, resolve_device
 
 
-def parse_args() -> argparse.Namespace:
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Evaluate DeepSC image model")
     parser.add_argument("--config", default="configs/eval_kodak.yaml")
+    parser.add_argument("--interactive", "-i", action="store_true", help="Prompt for evaluation parameters")
     parser.add_argument("--checkpoint", default=None)
-    return parser.parse_args()
+    parser.add_argument("--device", default=None)
+    parser.add_argument("--dataset", choices=("cifar10", "image_folder"), default=None)
+    parser.add_argument("--data-root", default=None)
+    parser.add_argument("--image-size", type=int, default=None)
+    parser.add_argument("--semantic-channels", type=int, default=None)
+    parser.add_argument("--base-channels", type=int, default=None)
+    parser.add_argument("--channel", choices=("none", "awgn", "rayleigh"), default=None)
+    parser.add_argument("--snr-db", type=float, nargs="+", default=None, help="One or more evaluation SNR values")
+    parser.add_argument("--jpeg-quality", type=int, default=None)
+    parser.add_argument("--monte-carlo-samples", type=int, default=None)
+    parser.add_argument("--output-dir", default=None)
+    return parser.parse_args(argv)
+
+
+def build_config_from_args(args: argparse.Namespace) -> dict[str, Any]:
+    cfg = load_yaml(args.config)
+    if args.checkpoint is not None:
+        set_nested(cfg, ["checkpoint"], args.checkpoint)
+    if args.device is not None:
+        set_nested(cfg, ["device"], args.device)
+    if args.dataset is not None:
+        set_nested(cfg, ["dataset", "name"], args.dataset)
+    if args.data_root is not None:
+        set_nested(cfg, ["dataset", "root"], args.data_root)
+    if args.image_size is not None:
+        set_nested(cfg, ["dataset", "image_size"], args.image_size)
+    if args.semantic_channels is not None:
+        set_nested(cfg, ["model", "semantic_channels"], args.semantic_channels)
+    if args.base_channels is not None:
+        set_nested(cfg, ["model", "base_channels"], args.base_channels)
+    if args.channel is not None:
+        set_nested(cfg, ["channel", "type"], args.channel)
+    if args.snr_db is not None:
+        set_nested(cfg, ["channel", "snr_db"], list(args.snr_db))
+    if args.jpeg_quality is not None:
+        set_nested(cfg, ["baseline", "jpeg_quality"], args.jpeg_quality)
+    if args.monte_carlo_samples is not None:
+        set_nested(cfg, ["evaluation", "monte_carlo_samples"], args.monte_carlo_samples)
+    if args.output_dir is not None:
+        set_nested(cfg, ["output_dir"], args.output_dir)
+    if args.interactive:
+        apply_eval_interactive_config(cfg)
+    return cfg
 
 
 def _image_shape(dataset_cfg: dict[str, Any]) -> tuple[int, int, int]:
@@ -100,8 +144,8 @@ def run_evaluation(cfg: dict[str, Any], checkpoint: str | None = None) -> list[d
 
 def main() -> None:
     args = parse_args()
-    cfg = load_yaml(args.config)
-    run_evaluation(cfg, checkpoint=args.checkpoint)
+    cfg = build_config_from_args(args)
+    run_evaluation(cfg)
 
 
 if __name__ == "__main__":
