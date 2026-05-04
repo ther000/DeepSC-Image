@@ -59,15 +59,15 @@ python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt
 pip install -e .
-$env:PYTHONPATH="src"
 ```
+
+执行过 `pip install -e .` 后，`deepsc_image` 会以可编辑模式安装到当前虚拟环境，后续在该虚拟环境中运行命令时不需要每次再设置 `$env:PYTHONPATH="src"`。如果没有执行可编辑安装，才需要临时设置 `PYTHONPATH`。
 
 ## CPU 冒烟测试
 
 该测试不会下载数据集，会在随机张量上执行模型前向传播、三类信道、PSNR/SSIM、JPEG 基线和一次极小训练步骤。
 
 ```powershell
-$env:PYTHONPATH="src"
 python -m deepsc_image.smoke_test
 ```
 
@@ -100,7 +100,6 @@ datasets/kodak/kodim24.png
 配置驱动训练：
 
 ```powershell
-$env:PYTHONPATH="src"
 python -m deepsc_image.train --config configs/train_cifar10_awgn.yaml
 python -m deepsc_image.train --config configs/train_cifar10_rayleigh.yaml
 ```
@@ -179,9 +178,9 @@ summary.json
 - `best_model.pth`：训练损失最低的模型。当前没有验证集，因此 best 基于最低 `train_loss`。
 - `last_model.pth`：最后一轮模型。
 - `config.yaml`：本次有效配置，包含解析后的单个 `model.semantic_channels`、实际输出目录、时间戳和带宽估计。
-- `history.csv` / `history.json`：每个 epoch 的 `epoch, train_loss, psnr, ssim, batches`。
-- `loss_curve.png`：训练 Loss 曲线。
-- `summary.json`：最佳轮次、最佳训练损失、最后一轮损失、checkpoint 文件名、输出目录和带宽估计。
+- `history.csv` / `history.json`：每个 epoch 的 `epoch, train_loss, psnr, ssim, batches`，训练过程中会在每个 epoch 结束后刷新。
+- `loss_curve.png`：训练 Loss 曲线，训练过程中会在每个 epoch 结束后刷新，因此可以打开实验目录查看当前曲线。
+- `summary.json`：最佳轮次、最佳训练损失、最后一轮损失、checkpoint 文件名、输出目录和带宽估计，在训练结束后生成。
 
 训练不再保存 `epoch_001.pth`、`epoch_002.pth` 这类逐 epoch checkpoint。评估、推理和 GUI 展示通常建议优先使用 `best_model.pth`。
 
@@ -190,7 +189,6 @@ summary.json
 配置驱动评估：
 
 ```powershell
-$env:PYTHONPATH="src"
 python -m deepsc_image.evaluate --config configs/eval_kodak.yaml --checkpoint outputs/train_cifar10_awgn/<experiment_dir>/best_model.pth
 ```
 
@@ -209,7 +207,6 @@ python -m deepsc_image.evaluate --config configs/eval_kodak.yaml --interactive
 ## 单图推理
 
 ```powershell
-$env:PYTHONPATH="src"
 python -m deepsc_image.infer `
   --input path/to/image.png `
   --checkpoint outputs/train_cifar10_awgn/<experiment_dir>/best_model.pth `
@@ -224,7 +221,6 @@ python -m deepsc_image.infer `
 ## Streamlit GUI
 
 ```powershell
-$env:PYTHONPATH="src"
 streamlit run src/deepsc_image/app.py
 ```
 
