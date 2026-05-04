@@ -1,0 +1,28 @@
+{
+  "best_epoch": 25,
+  "best_train_loss": -0.2752682025034619,
+  "last_epoch": 100,
+  "last_train_loss": -0.09665796171714221,
+  "checkpoint_filenames": {
+    "best": "best_model.pth",
+    "last": "last_model.pth"
+  },
+  "output_dir": "outputs/train_cifar10_awgn/ts_05050506__ch_awgn__snr_0_5_10_15_20__sem_8__base_32__img_32__seed_42",
+  "bandwidth_estimate": {
+    "input_shape": [
+      3,
+      32,
+      32
+    ],
+    "semantic_shape": [
+      8,
+      8,
+      8
+    ],
+    "downsampling_factor": 4,
+    "input_scalars": 3072,
+    "semantic_symbols": 512,
+    "bandwidth_ratio": 0.16666666666666666,
+    "compression_ratio": 6.0
+  }
+}
