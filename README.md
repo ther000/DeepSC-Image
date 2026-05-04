@@ -137,6 +137,10 @@ python -m deepsc_image.train --config configs/train_cifar10_awgn.yaml --epochs 1
 | 学习率 | `training.learning_rate` / `--learning-rate` | Adam 优化器步长，过大可能震荡，过小收敛慢。 | 默认 `0.001`。 |
 | 权重衰减 | `training.weight_decay` / `--weight-decay` | L2 正则项，用于抑制过拟合。 | 默认 `0.0001`。 |
 | SSIM 权重 | `training.ssim_weight` / `--ssim-weight` | 混合损失中 `(1 - SSIM)` 的权重 `alpha`，实际损失为 `(1 - alpha) * MSE + alpha * (1 - SSIM)`。 | 默认 `0.2`；更重视结构相似度可适当增大。 |
+| 混合精度 | `training.amp.enabled` | CUDA 设备上启用 PyTorch AMP；CPU 下会安全降级为关闭。 | 默认 `false`；NVIDIA GPU 正式提速测试可改为 `true`。 |
+| DataLoader worker | `training.dataloader.num_workers` | 数据加载子进程数。Windows/CPU 默认保持单进程以保证兼容。 | 默认 `0`；GPU 训练可从 `2/4` 试起。 |
+| 固定页内存 | `training.dataloader.pin_memory` | CUDA 训练时可配合非阻塞拷贝降低 host-to-device 传输开销。 | 默认 `false`；CUDA benchmark 后再决定是否开启。 |
+| 产物刷新频率 | `training.artifacts.*_every_epochs` | 分别控制 history、loss 曲线、checkpoint 的刷新间隔；最终 epoch 总会写出最终产物。 | 默认均为 `1`，保持每 epoch 刷新。 |
 | 输出目录 | `training.output_dir` / `--output-dir` | 实验结果根目录，程序会在其下创建带时间戳和关键参数的子目录。 | 建议按信道或实验目的区分，如 `outputs/train_cifar10_awgn`。 |
 
 `configs/train_cifar10_awgn.yaml` 演示了压缩率/语义通道扫参：
@@ -145,6 +149,56 @@ python -m deepsc_image.train --config configs/train_cifar10_awgn.yaml --epochs 1
 model:
   semantic_channels: [16, 32, 64]
 ```
+
+训练加速配置默认保持兼容；需要提速时可以在 YAML 中显式开启：
+
+```yaml
+model:
+  # Benchmark 正式对比时建议用单个值；训练扫参仍可使用列表。
+  semantic_channels: 16
+training:
+  amp:
+    enabled: true
+    dtype: float16
+  dataloader:
+    num_workers: 4
+    pin_memory: true
+    persistent_workers: true
+    prefetch_factor: 2
+  artifacts:
+    history_every_epochs: 1
+    plot_every_epochs: 5
+    checkpoint_every_epochs: 5
+```
+
+注意：`persistent_workers` 和 `prefetch_factor` 只会在 `num_workers > 0` 时生效；CPU 或非 CUDA 环境下 AMP 会记录为请求开启但实际关闭。`history_every_epochs`、`plot_every_epochs` 和 `checkpoint_every_epochs` 控制训练过程中的刷新频率，默认均为 `1`，因此默认仍保持每个 epoch 刷新；无论频率如何，最终 epoch 总会补写最终 history、loss 曲线和 checkpoint 产物。
+
+训练吞吐 benchmark 可以用随机张量做有界对比，不会下载数据集：
+
+```powershell
+python -m deepsc_image.benchmark_training `
+  --config configs/train_cifar10_awgn.yaml `
+  --epochs 1 `
+  --warmup 1 `
+  --repeat 2 `
+  --max-batches 2 `
+  --semantic-channels 16 `
+  --output outputs/benchmark/baseline.json
+
+python -m deepsc_image.benchmark_training `
+  --config configs/train_cifar10_awgn.yaml `
+  --epochs 1 `
+  --warmup 1 `
+  --repeat 2 `
+  --max-batches 2 `
+  --semantic-channels 16 `
+  --amp `
+  --num-workers 4 `
+  --pin-memory `
+  --output outputs/benchmark/optimized.json
+```
+
+输出 JSON 会包含设备、PyTorch 版本、实际模型参数、AMP/DataLoader 实际配置、epoch 用时和 samples/sec 的 median/mean；CUDA 可用时还会记录峰值显存信息。benchmark 要求单个 `semantic_channels`，如果训练配置中是 `[16, 32, 64]` 这类列表，请用 `--semantic-channels` 明确指定本次测量的模型规模。
 
 每次训练都会建立描述性实验目录，例如：
 
@@ -178,8 +232,8 @@ summary.json
 - `best_model.pth`：训练损失最低的模型。当前没有验证集，因此 best 基于最低 `train_loss`。
 - `last_model.pth`：最后一轮模型。
 - `config.yaml`：本次有效配置，包含解析后的单个 `model.semantic_channels`、实际输出目录、时间戳和带宽估计。
-- `history.csv` / `history.json`：每个 epoch 的 `epoch, train_loss, psnr, ssim, batches`，训练过程中会在每个 epoch 结束后刷新。
-- `loss_curve.png`：训练 Loss 曲线，训练过程中会在每个 epoch 结束后刷新，因此可以打开实验目录查看当前曲线。
+- `history.csv` / `history.json`：每个 epoch 的 `epoch, train_loss, psnr, ssim, batches`，默认会在每个 epoch 结束后刷新；如果设置了 `training.artifacts.history_every_epochs`，则按该频率刷新，并在最终 epoch 补写最终结果。
+- `loss_curve.png`：训练 Loss 曲线，默认会在每个 epoch 结束后刷新；如果设置了 `training.artifacts.plot_every_epochs`，则按该频率刷新，并在最终 epoch 补写最终曲线。
 - `summary.json`：最佳轮次、最佳训练损失、最后一轮损失、checkpoint 文件名、输出目录和带宽估计，在训练结束后生成。
 
 训练不再保存 `epoch_001.pth`、`epoch_002.pth` 这类逐 epoch checkpoint。评估、推理和 GUI 展示通常建议优先使用 `best_model.pth`。
