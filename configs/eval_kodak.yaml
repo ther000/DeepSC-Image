@@ -1,0 +1,18 @@
+device: auto
+dataset:
+  name: image_folder
+  root: datasets/kodak
+  image_size: 256
+model:
+  semantic_channels: 32
+  base_channels: 32
+checkpoint: null
+channel:
+  type: awgn
+  snr_db: [-5, 0, 5, 10, 15, 20]
+baseline:
+  jpeg_quality: 35
+evaluation:
+  # Repeated stochastic channel draws per image/SNR for Monte Carlo averaging.
+  monte_carlo_samples: 5
+output_dir: outputs/eval_kodak

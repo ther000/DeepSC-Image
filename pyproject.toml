@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "deepsc-image"
+version = "0.1.0"
+description = "DeepSC image robust transmission system with PyTorch channels and Streamlit GUI"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [{ name = "DeepSC Image Project" }]
+dependencies = [
+  "torch>=2.0",
+  "torchvision>=0.15",
+  "pillow>=9.5",
+  "numpy>=1.23",
+  "pyyaml>=6.0",
+  "streamlit>=1.25",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

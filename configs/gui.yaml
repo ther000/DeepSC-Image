@@ -1,0 +1,16 @@
+device: auto
+checkpoint: null
+model:
+  semantic_channels: 32
+  base_channels: 32
+ui:
+  default_snr_db: 10
+  min_snr_db: -5
+  max_snr_db: 20
+  default_channel: awgn
+  image_size: 256
+  max_upload_size_mb: 10
+  max_image_pixels: 4194304  # 2048x2048
+  trusted_checkpoint_dir: "outputs"
+baseline:
+  jpeg_quality: 35
