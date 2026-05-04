@@ -15,4 +15,6 @@ baseline:
 evaluation:
   # Repeated stochastic channel draws per image/SNR for Monte Carlo averaging.
   monte_carlo_samples: 5
+  artifacts:
+    plot_curves: true
 output_dir: outputs/eval_kodak
