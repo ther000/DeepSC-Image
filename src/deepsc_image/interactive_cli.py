@@ -84,6 +84,32 @@ def prompt_int(label: str, default: int, input_func: InputFunc = input, output_f
         return parsed
 
 
+def prompt_non_negative_int(label: str, default: int, input_func: InputFunc = input, output_func: OutputFunc = print) -> int:
+    while True:
+        value = prompt_int(label, default, input_func, output_func, positive=False)
+        if value >= 0:
+            return value
+        output_func("Enter a non-negative integer.")
+
+
+def prompt_optional_positive_int(label: str, default: int | None, input_func: InputFunc = input, output_func: OutputFunc = print) -> int | None:
+    while True:
+        value = _raw(label, default, input_func).lower()
+        if value == "":
+            return default
+        if value in {"none", "null"}:
+            return None
+        try:
+            parsed = int(value)
+        except ValueError:
+            output_func("Enter a positive integer, none, or null.")
+            continue
+        if parsed <= 0:
+            output_func("Enter a positive integer, none, or null.")
+            continue
+        return parsed
+
+
 def prompt_float(label: str, default: float, input_func: InputFunc = input, output_func: OutputFunc = print, *, minimum: float | None = None, maximum: float | None = None) -> float:
     while True:
         value = _raw(label, default, input_func)
@@ -167,6 +193,15 @@ def apply_train_interactive_config(cfg: dict[str, Any], input_func: InputFunc = 
     set_nested(cfg, ["training", "learning_rate"], prompt_float("Learning rate", float(get_nested(cfg, ["training", "learning_rate"], 1e-3)), input_func, output_func, minimum=0.0))
     set_nested(cfg, ["training", "weight_decay"], prompt_float("Weight decay", float(get_nested(cfg, ["training", "weight_decay"], 1e-4)), input_func, output_func, minimum=0.0))
     set_nested(cfg, ["training", "ssim_weight"], prompt_float("SSIM loss weight", float(get_nested(cfg, ["training", "ssim_weight"], 0.2)), input_func, output_func, minimum=0.0, maximum=1.0))
+    set_nested(cfg, ["training", "amp", "enabled"], prompt_bool("Enable CUDA AMP", bool(get_nested(cfg, ["training", "amp", "enabled"], False)), input_func, output_func))
+    set_nested(cfg, ["training", "amp", "dtype"], prompt_choice("AMP dtype", ("float16", "bfloat16"), str(get_nested(cfg, ["training", "amp", "dtype"], "float16")), input_func, output_func))
+    set_nested(cfg, ["training", "dataloader", "num_workers"], prompt_non_negative_int("DataLoader workers", int(get_nested(cfg, ["training", "dataloader", "num_workers"], 0)), input_func, output_func))
+    set_nested(cfg, ["training", "dataloader", "pin_memory"], prompt_bool("DataLoader pin memory", bool(get_nested(cfg, ["training", "dataloader", "pin_memory"], False)), input_func, output_func))
+    set_nested(cfg, ["training", "dataloader", "persistent_workers"], prompt_bool("DataLoader persistent workers", bool(get_nested(cfg, ["training", "dataloader", "persistent_workers"], False)), input_func, output_func))
+    set_nested(cfg, ["training", "dataloader", "prefetch_factor"], prompt_optional_positive_int("DataLoader prefetch factor", get_nested(cfg, ["training", "dataloader", "prefetch_factor"], None), input_func, output_func))
+    set_nested(cfg, ["training", "artifacts", "history_every_epochs"], prompt_int("History refresh every epochs", int(get_nested(cfg, ["training", "artifacts", "history_every_epochs"], 1)), input_func, output_func))
+    set_nested(cfg, ["training", "artifacts", "plot_every_epochs"], prompt_int("Loss curve refresh every epochs", int(get_nested(cfg, ["training", "artifacts", "plot_every_epochs"], 1)), input_func, output_func))
+    set_nested(cfg, ["training", "artifacts", "checkpoint_every_epochs"], prompt_int("Checkpoint refresh every epochs", int(get_nested(cfg, ["training", "artifacts", "checkpoint_every_epochs"], 1)), input_func, output_func))
     set_nested(cfg, ["training", "output_dir"], prompt_string("Output directory", str(get_nested(cfg, ["training", "output_dir"], "outputs/train")), input_func))
     return cfg
 
