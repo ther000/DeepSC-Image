@@ -1,0 +1,28 @@
+{
+  "best_epoch": 189,
+  "best_train_loss": 0.003326935634074156,
+  "last_epoch": 200,
+  "last_train_loss": 0.003756332187824037,
+  "checkpoint_filenames": {
+    "best": "best_model.pth",
+    "last": "last_model.pth"
+  },
+  "output_dir": "outputs/train_cifar10_rayleigh/ts_05050958__ch_rayleigh__snr_0_5_10_15_20__sem_64__base_32__img_32__seed_42",
+  "bandwidth_estimate": {
+    "input_shape": [
+      3,
+      32,
+      32
+    ],
+    "semantic_shape": [
+      64,
+      8,
+      8
+    ],
+    "downsampling_factor": 4,
+    "input_scalars": 3072,
+    "semantic_symbols": 4096,
+    "bandwidth_ratio": 1.3333333333333333,
+    "compression_ratio": 0.75
+  }
+}
