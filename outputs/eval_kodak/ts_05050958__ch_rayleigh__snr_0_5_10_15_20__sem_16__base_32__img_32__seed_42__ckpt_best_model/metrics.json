@@ -1,0 +1,170 @@
+[
+  {
+    "snr_db": -5.0,
+    "channel": "rayleigh",
+    "deepsc_psnr": 18.73428921699524,
+    "deepsc_ssim": 0.4503657395641009,
+    "jpeg_psnr": 11.916438535849254,
+    "jpeg_ssim": 0.1499733317643404,
+    "samples": 24,
+    "monte_carlo_samples": 5,
+    "repetitions": 120,
+    "bandwidth_estimate": {
+      "input_shape": [
+        3,
+        256,
+        256
+      ],
+      "semantic_shape": [
+        16,
+        64,
+        64
+      ],
+      "downsampling_factor": 4,
+      "input_scalars": 196608,
+      "semantic_symbols": 65536,
+      "bandwidth_ratio": 0.3333333333333333,
+      "compression_ratio": 3.0
+    }
+  },
+  {
+    "snr_db": 0.0,
+    "channel": "rayleigh",
+    "deepsc_psnr": 24.755121246973673,
+    "deepsc_ssim": 0.7303749476869901,
+    "jpeg_psnr": 13.272077814737957,
+    "jpeg_ssim": 0.2491621425996224,
+    "samples": 24,
+    "monte_carlo_samples": 5,
+    "repetitions": 120,
+    "bandwidth_estimate": {
+      "input_shape": [
+        3,
+        256,
+        256
+      ],
+      "semantic_shape": [
+        16,
+        64,
+        64
+      ],
+      "downsampling_factor": 4,
+      "input_scalars": 196608,
+      "semantic_symbols": 65536,
+      "bandwidth_ratio": 0.3333333333333333,
+      "compression_ratio": 3.0
+    }
+  },
+  {
+    "snr_db": 5.0,
+    "channel": "rayleigh",
+    "deepsc_psnr": 29.37676723798116,
+    "deepsc_ssim": 0.9021516248583794,
+    "jpeg_psnr": 15.733429539203645,
+    "jpeg_ssim": 0.39660502076148985,
+    "samples": 24,
+    "monte_carlo_samples": 5,
+    "repetitions": 120,
+    "bandwidth_estimate": {
+      "input_shape": [
+        3,
+        256,
+        256
+      ],
+      "semantic_shape": [
+        16,
+        64,
+        64
+      ],
+      "downsampling_factor": 4,
+      "input_scalars": 196608,
+      "semantic_symbols": 65536,
+      "bandwidth_ratio": 0.3333333333333333,
+      "compression_ratio": 3.0
+    }
+  },
+  {
+    "snr_db": 10.0,
+    "channel": "rayleigh",
+    "deepsc_psnr": 31.84981851577759,
+    "deepsc_ssim": 0.9475576226909955,
+    "jpeg_psnr": 16.88426411151886,
+    "jpeg_ssim": 0.5554381561776002,
+    "samples": 24,
+    "monte_carlo_samples": 5,
+    "repetitions": 120,
+    "bandwidth_estimate": {
+      "input_shape": [
+        3,
+        256,
+        256
+      ],
+      "semantic_shape": [
+        16,
+        64,
+        64
+      ],
+      "downsampling_factor": 4,
+      "input_scalars": 196608,
+      "semantic_symbols": 65536,
+      "bandwidth_ratio": 0.3333333333333333,
+      "compression_ratio": 3.0
+    }
+  },
+  {
+    "snr_db": 15.0,
+    "channel": "rayleigh",
+    "deepsc_psnr": 32.861580244700114,
+    "deepsc_ssim": 0.9586803704500199,
+    "jpeg_psnr": 17.52351214090983,
+    "jpeg_ssim": 0.6702060351769129,
+    "samples": 24,
+    "monte_carlo_samples": 5,
+    "repetitions": 120,
+    "bandwidth_estimate": {
+      "input_shape": [
+        3,
+        256,
+        256
+      ],
+      "semantic_shape": [
+        16,
+        64,
+        64
+      ],
+      "downsampling_factor": 4,
+      "input_scalars": 196608,
+      "semantic_symbols": 65536,
+      "bandwidth_ratio": 0.3333333333333333,
+      "compression_ratio": 3.0
+    }
+  },
+  {
+    "snr_db": 20.0,
+    "channel": "rayleigh",
+    "deepsc_psnr": 33.224497429529826,
+    "deepsc_ssim": 0.961847448348999,
+    "jpeg_psnr": 18.298051273822786,
+    "jpeg_ssim": 0.725774409994483,
+    "samples": 24,
+    "monte_carlo_samples": 5,
+    "repetitions": 120,
+    "bandwidth_estimate": {
+      "input_shape": [
+        3,
+        256,
+        256
+      ],
+      "semantic_shape": [
+        16,
+        64,
+        64
+      ],
+      "downsampling_factor": 4,
+      "input_scalars": 196608,
+      "semantic_symbols": 65536,
+      "bandwidth_ratio": 0.3333333333333333,
+      "compression_ratio": 3.0
+    }
+  }
+]

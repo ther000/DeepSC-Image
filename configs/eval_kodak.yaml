@@ -8,10 +8,10 @@ model:
   base_channels: 32
 checkpoint: null
 channel:
-  type: awgn
+  type: rayleigh
   snr_db: [-5, 0, 5, 10, 15, 20]
 baseline:
-  jpeg_quality: 35
+  jpeg_quality: 90
 evaluation:
   # Repeated stochastic channel draws per image/SNR for Monte Carlo averaging.
   monte_carlo_samples: 5

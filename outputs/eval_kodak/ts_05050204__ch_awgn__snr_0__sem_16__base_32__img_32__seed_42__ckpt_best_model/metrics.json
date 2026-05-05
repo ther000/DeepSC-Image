@@ -1,0 +1,170 @@
+[
+  {
+    "snr_db": -5.0,
+    "channel": "awgn",
+    "deepsc_psnr": 20.357181564966837,
+    "deepsc_ssim": 0.6092190618316332,
+    "jpeg_psnr": 11.427150742212932,
+    "jpeg_ssim": 0.11002443398659428,
+    "samples": 24,
+    "monte_carlo_samples": 5,
+    "repetitions": 120,
+    "bandwidth_estimate": {
+      "input_shape": [
+        3,
+        256,
+        256
+      ],
+      "semantic_shape": [
+        16,
+        64,
+        64
+      ],
+      "downsampling_factor": 4,
+      "input_scalars": 196608,
+      "semantic_symbols": 65536,
+      "bandwidth_ratio": 0.3333333333333333,
+      "compression_ratio": 3.0
+    }
+  },
+  {
+    "snr_db": 0.0,
+    "channel": "awgn",
+    "deepsc_psnr": 26.54810759226481,
+    "deepsc_ssim": 0.8441267892718315,
+    "jpeg_psnr": 15.458073019981384,
+    "jpeg_ssim": 0.21110614594072102,
+    "samples": 24,
+    "monte_carlo_samples": 5,
+    "repetitions": 120,
+    "bandwidth_estimate": {
+      "input_shape": [
+        3,
+        256,
+        256
+      ],
+      "semantic_shape": [
+        16,
+        64,
+        64
+      ],
+      "downsampling_factor": 4,
+      "input_scalars": 196608,
+      "semantic_symbols": 65536,
+      "bandwidth_ratio": 0.3333333333333333,
+      "compression_ratio": 3.0
+    }
+  },
+  {
+    "snr_db": 5.0,
+    "channel": "awgn",
+    "deepsc_psnr": 28.006784041722614,
+    "deepsc_ssim": 0.8752297580242157,
+    "jpeg_psnr": 20.03610429763794,
+    "jpeg_ssim": 0.3662324300656716,
+    "samples": 24,
+    "monte_carlo_samples": 5,
+    "repetitions": 120,
+    "bandwidth_estimate": {
+      "input_shape": [
+        3,
+        256,
+        256
+      ],
+      "semantic_shape": [
+        16,
+        64,
+        64
+      ],
+      "downsampling_factor": 4,
+      "input_scalars": 196608,
+      "semantic_symbols": 65536,
+      "bandwidth_ratio": 0.3333333333333333,
+      "compression_ratio": 3.0
+    }
+  },
+  {
+    "snr_db": 10.0,
+    "channel": "awgn",
+    "deepsc_psnr": 28.17356824874878,
+    "deepsc_ssim": 0.8741968378424645,
+    "jpeg_psnr": 24.677252785364786,
+    "jpeg_ssim": 0.5575482276578744,
+    "samples": 24,
+    "monte_carlo_samples": 5,
+    "repetitions": 120,
+    "bandwidth_estimate": {
+      "input_shape": [
+        3,
+        256,
+        256
+      ],
+      "semantic_shape": [
+        16,
+        64,
+        64
+      ],
+      "downsampling_factor": 4,
+      "input_scalars": 196608,
+      "semantic_symbols": 65536,
+      "bandwidth_ratio": 0.3333333333333333,
+      "compression_ratio": 3.0
+    }
+  },
+  {
+    "snr_db": 15.0,
+    "channel": "awgn",
+    "deepsc_psnr": 28.185791889826458,
+    "deepsc_ssim": 0.8730205694834391,
+    "jpeg_psnr": 28.97630189259847,
+    "jpeg_ssim": 0.7400046447912852,
+    "samples": 24,
+    "monte_carlo_samples": 5,
+    "repetitions": 120,
+    "bandwidth_estimate": {
+      "input_shape": [
+        3,
+        256,
+        256
+      ],
+      "semantic_shape": [
+        16,
+        64,
+        64
+      ],
+      "downsampling_factor": 4,
+      "input_scalars": 196608,
+      "semantic_symbols": 65536,
+      "bandwidth_ratio": 0.3333333333333333,
+      "compression_ratio": 3.0
+    }
+  },
+  {
+    "snr_db": 20.0,
+    "channel": "awgn",
+    "deepsc_psnr": 28.185472933451333,
+    "deepsc_ssim": 0.8725464214881261,
+    "jpeg_psnr": 32.395445028940834,
+    "jpeg_ssim": 0.8640672609210014,
+    "samples": 24,
+    "monte_carlo_samples": 5,
+    "repetitions": 120,
+    "bandwidth_estimate": {
+      "input_shape": [
+        3,
+        256,
+        256
+      ],
+      "semantic_shape": [
+        16,
+        64,
+        64
+      ],
+      "downsampling_factor": 4,
+      "input_scalars": 196608,
+      "semantic_symbols": 65536,
+      "bandwidth_ratio": 0.3333333333333333,
+      "compression_ratio": 3.0
+    }
+  }
+]
