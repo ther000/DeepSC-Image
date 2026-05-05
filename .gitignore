@@ -17,4 +17,7 @@ cache/
 # Streamlit local state
 .streamlit/secrets.toml
 .sisyphus/
-.firecrawl/
+.opencode/
+paper/
+.orchestra-skills.json
+
