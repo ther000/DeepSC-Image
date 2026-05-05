@@ -1,0 +1,30 @@
+{
+  "semantic_channels": [
+    16,
+    32,
+    64
+  ],
+  "eval_snr_db": [
+    -5,
+    0,
+    5,
+    10,
+    15,
+    20
+  ],
+  "channel": "awgn",
+  "metrics": [
+    "psnr",
+    "ssim"
+  ],
+  "git_commit": "2d1e5535f4398865f6ee34b76745c6d21a3841dc",
+  "python_version": "3.13.9",
+  "torch_version": "2.10.0+cpu",
+  "device": "cpu",
+  "eval_config_path": "configs/eval_kodak.yaml",
+  "timestamp": "2026-05-05T10:26:57",
+  "compression_definition": "semantic bottleneck compression study, not traditional entropy-coded file compression",
+  "dataset_root": "datasets/kodak",
+  "monte_carlo_samples": 5,
+  "kodak_image_count": 24
+}
