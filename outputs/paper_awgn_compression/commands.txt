@@ -1,0 +1,5 @@
+python -m deepsc_image.smoke_test
+# Evaluation commands are generated from selected_checkpoints.json by .sisyphus/evidence/validate_eval_inputs.py
+python -m deepsc_image.evaluate --config configs/eval_kodak.yaml --checkpoint outputs/train_cifar10_awgn/ts_05050150__ch_awgn__snr_0_5_10_15_20__sem_16__base_32__img_32__seed_42/best_model.pth --semantic-channels 16 --output-dir outputs/paper_awgn_compression/sem_16_raw
+python -m deepsc_image.evaluate --config configs/eval_kodak.yaml --checkpoint outputs/train_cifar10_awgn/ts_05050150__ch_awgn__snr_0_5_10_15_20__sem_32__base_32__img_32__seed_42/best_model.pth --semantic-channels 32 --output-dir outputs/paper_awgn_compression/sem_32_raw
+python -m deepsc_image.evaluate --config configs/eval_kodak.yaml --checkpoint outputs/train_cifar10_awgn/ts_05050150__ch_awgn__snr_0_5_10_15_20__sem_64__base_32__img_32__seed_42/best_model.pth --semantic-channels 64 --output-dir outputs/paper_awgn_compression/sem_64_raw

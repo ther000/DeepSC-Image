@@ -1,0 +1,1 @@
+python -m deepsc_image.evaluate --config configs/eval_kodak.yaml --checkpoint outputs/train_cifar10_awgn/ts_05050150__ch_awgn__snr_0_5_10_15_20__sem_64__base_32__img_32__seed_42/best_model.pth --semantic-channels 64 --output-dir outputs/paper_awgn_compression/sem_64_raw
