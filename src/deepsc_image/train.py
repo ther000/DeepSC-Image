@@ -18,7 +18,9 @@ from typing import Any
 import torch
 from torch.utils.data import DataLoader
 import yaml
-from PIL import Image, ImageDraw
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 
 from .channels import ChannelConfig
 from .data import build_dataset, unwrap_batch
@@ -282,48 +284,21 @@ def _write_json(path: Path, data: Any) -> None:
 
 
 def _draw_loss_curve(path: Path, history: list[dict[str, Any]]) -> None:
-    width, height = 800, 480
-    margin_left, margin_top, margin_right, margin_bottom = 80, 40, 30, 70
-    image = Image.new("RGB", (width, height), "white")
-    draw = ImageDraw.Draw(image)
-    plot_left = margin_left
-    plot_top = margin_top
-    plot_right = width - margin_right
-    plot_bottom = height - margin_bottom
-    draw.rectangle((plot_left, plot_top, plot_right, plot_bottom), outline="black")
-    draw.text((plot_left, 12), "Training loss", fill="black")
-    draw.text((width // 2 - 25, height - 35), "epoch", fill="black")
-    draw.text((12, plot_top), "train_loss", fill="black")
-    if not history:
-        image.save(path)
-        return
+    fig, ax = plt.subplots(figsize=(8, 4.8))
 
-    losses = [float(row["train_loss"]) for row in history]
-    min_loss = min(losses)
-    max_loss = max(losses)
-    if min_loss == max_loss:
-        min_loss -= 0.5 if min_loss == 0 else abs(min_loss) * 0.1
-        max_loss += 0.5 if max_loss == 0 else abs(max_loss) * 0.1
-    x_span = max(1, len(history) - 1)
-    y_span = max_loss - min_loss
-    points: list[tuple[float, float]] = []
-    for index, row in enumerate(history):
-        x = plot_left + (plot_right - plot_left) * index / x_span
-        y = plot_bottom - (float(row["train_loss"]) - min_loss) * (plot_bottom - plot_top) / y_span
-        points.append((x, y))
-    for tick in range(5):
-        y = plot_bottom - (plot_bottom - plot_top) * tick / 4
-        value = min_loss + y_span * tick / 4
-        draw.line((plot_left - 5, y, plot_left, y), fill="black")
-        draw.text((8, y - 7), f"{value:.4g}", fill="black")
-    if len(points) == 1:
-        x, y = points[0]
-        draw.ellipse((x - 4, y - 4, x + 4, y + 4), fill="blue")
-    else:
-        draw.line(points, fill="blue", width=3)
-        for x, y in points:
-            draw.ellipse((x - 3, y - 3, x + 3, y + 3), fill="blue")
-    image.save(path)
+    if history:
+        losses = [float(row["train_loss"]) for row in history]
+        epochs = [int(row["epoch"]) for row in history]
+        ax.plot(epochs, losses, color="blue", marker="o", linewidth=2, markersize=4)
+
+    ax.set_title("Training loss", fontsize=12)
+    ax.set_xlabel("epoch", fontsize=11)
+    ax.set_ylabel("train_loss", fontsize=11)
+    ax.grid(True, alpha=0.3)
+
+    fig.tight_layout()
+    fig.savefig(path, dpi=100, bbox_inches="tight")
+    plt.close(fig)
 
 
 def _write_history_artifacts(output_dir: Path, history: list[dict[str, Any]], *, include_plot: bool = True) -> None:

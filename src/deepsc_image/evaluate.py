@@ -9,7 +9,9 @@ from typing import Any
 
 import torch
 from torch.utils.data import DataLoader
-from PIL import Image, ImageDraw
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 
 from .baseline import jpeg_baseline_tensor
 from .channels import ChannelConfig
@@ -91,89 +93,26 @@ def _draw_comparison_curve(
     deepsc_key: str,
     jpeg_key: str,
 ) -> None:
-    width, height = 800, 480
-    margin_left, margin_top, margin_right, margin_bottom = 80, 40, 30, 70
-    image = Image.new("RGB", (width, height), "white")
-    draw = ImageDraw.Draw(image)
+    fig, ax = plt.subplots(figsize=(8, 4.8))
 
-    plot_left = margin_left
-    plot_top = margin_top
-    plot_right = width - margin_right
-    plot_bottom = height - margin_bottom
-    draw.rectangle((plot_left, plot_top, plot_right, plot_bottom), outline="black")
-    draw.text((plot_left, 12), title, fill="black")
-    draw.text((width // 2 - 20, height - 35), "snr_db", fill="black")
-    draw.text((12, plot_top), y_label, fill="black")
+    if rows:
+        sorted_rows = sorted(rows, key=lambda row: float(row["snr_db"]))
+        snr_values = [float(row["snr_db"]) for row in sorted_rows]
+        deepsc_values = [float(row[deepsc_key]) for row in sorted_rows]
+        jpeg_values = [float(row[jpeg_key]) for row in sorted_rows]
 
-    if not rows:
-        image.save(path)
-        return
+        ax.plot(snr_values, deepsc_values, color="blue", marker="o", linewidth=2, markersize=4, label="DeepSC")
+        ax.plot(snr_values, jpeg_values, color="red", marker="s", linewidth=2, markersize=4, label="JPEG baseline")
+        ax.legend(loc="best", fontsize=10)
 
-    sorted_rows = sorted(rows, key=lambda row: float(row["snr_db"]))
-    snr_values = [float(row["snr_db"]) for row in sorted_rows]
-    deepsc_values = [float(row[deepsc_key]) for row in sorted_rows]
-    jpeg_values = [float(row[jpeg_key]) for row in sorted_rows]
+    ax.set_title(title, fontsize=12)
+    ax.set_xlabel("snr_db", fontsize=11)
+    ax.set_ylabel(y_label, fontsize=11)
+    ax.grid(True, alpha=0.3)
 
-    x_min = min(snr_values)
-    x_max = max(snr_values)
-    if x_min == x_max:
-        x_min -= 1.0
-        x_max += 1.0
-    x_span = x_max - x_min
-
-    y_min = min(min(deepsc_values), min(jpeg_values))
-    y_max = max(max(deepsc_values), max(jpeg_values))
-    if y_min == y_max:
-        pad = 0.1 if y_min == 0 else abs(y_min) * 0.1
-        y_min -= pad
-        y_max += pad
-    y_span = y_max - y_min
-
-    def _project_point(snr_db: float, value: float) -> tuple[float, float]:
-        x = plot_left + (plot_right - plot_left) * (snr_db - x_min) / x_span
-        y = plot_bottom - (plot_bottom - plot_top) * (value - y_min) / y_span
-        return x, y
-
-    for tick in range(5):
-        y = plot_bottom - (plot_bottom - plot_top) * tick / 4
-        value = y_min + y_span * tick / 4
-        draw.line((plot_left - 5, y, plot_left, y), fill="black")
-        draw.text((8, y - 7), f"{value:.4g}", fill="black")
-    for tick in range(5):
-        x = plot_left + (plot_right - plot_left) * tick / 4
-        value = x_min + x_span * tick / 4
-        draw.line((x, plot_bottom, x, plot_bottom + 5), fill="black")
-        draw.text((x - 12, plot_bottom + 10), f"{value:.4g}", fill="black")
-
-    deep_points = [_project_point(snr_db, metric) for snr_db, metric in zip(snr_values, deepsc_values)]
-    jpeg_points = [_project_point(snr_db, metric) for snr_db, metric in zip(snr_values, jpeg_values)]
-
-    deep_color = "blue"
-    jpeg_color = "red"
-    if len(deep_points) == 1:
-        x, y = deep_points[0]
-        draw.ellipse((x - 4, y - 4, x + 4, y + 4), fill=deep_color)
-    else:
-        draw.line(deep_points, fill=deep_color, width=3)
-        for x, y in deep_points:
-            draw.ellipse((x - 3, y - 3, x + 3, y + 3), fill=deep_color)
-
-    if len(jpeg_points) == 1:
-        x, y = jpeg_points[0]
-        draw.ellipse((x - 4, y - 4, x + 4, y + 4), fill=jpeg_color)
-    else:
-        draw.line(jpeg_points, fill=jpeg_color, width=3)
-        for x, y in jpeg_points:
-            draw.ellipse((x - 3, y - 3, x + 3, y + 3), fill=jpeg_color)
-
-    legend_x = plot_right - 170
-    legend_y = plot_top + 12
-    draw.line((legend_x, legend_y + 8, legend_x + 28, legend_y + 8), fill=deep_color, width=3)
-    draw.text((legend_x + 35, legend_y), "DeepSC", fill="black")
-    draw.line((legend_x, legend_y + 30, legend_x + 28, legend_y + 30), fill=jpeg_color, width=3)
-    draw.text((legend_x + 35, legend_y + 22), "JPEG baseline", fill="black")
-
-    image.save(path)
+    fig.tight_layout()
+    fig.savefig(path, dpi=100, bbox_inches="tight")
+    plt.close(fig)
 
 
 def _write_curve_artifacts(output_dir: Path, rows: list[dict[str, Any]]) -> None:

@@ -4,3 +4,4 @@ pillow>=9.5
 numpy>=1.23
 pyyaml>=6.0
 streamlit>=1.25
+matplotlib>=3.7
