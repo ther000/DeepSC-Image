@@ -246,7 +246,7 @@ summary.json
 python -m deepsc_image.evaluate --config configs/eval_kodak.yaml --checkpoint outputs/train_cifar10_awgn/<experiment_dir>/best_model.pth
 ```
 
-评估会按配置中的 SNR 列表输出 DeepSC 与 JPEG 基线的 PSNR/SSIM，并保存 `metrics.json`。若未提供 checkpoint，程序会提示正在评估随机初始化模型，这仅适合检查流程，不适合写入性能结论。
+评估会按配置中的 SNR 列表输出 DeepSC 与 JPEG 基线的 PSNR/SSIM，并保存 `metrics.json`。提供 checkpoint 时，`output_dir` 会作为评估根目录，程序会在其下创建与训练实验目录和 checkpoint 文件名对应的子目录，例如 `outputs/eval_kodak/<experiment_dir>__ckpt_best_model/`，避免不同模型的评估结果互相覆盖。若未提供 checkpoint，程序会提示正在评估随机初始化模型，并直接写入配置中的 `output_dir`；这仅适合检查流程，不适合写入性能结论。
 
 也可以在命令行交互式设置本次评估参数：
 

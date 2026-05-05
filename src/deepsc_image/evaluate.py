@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -82,6 +83,22 @@ def _plot_curves_enabled(eval_cfg: dict[str, Any]) -> bool:
     if "plot_curves" not in artifacts_cfg:
         return True
     return bool(artifacts_cfg.get("plot_curves"))
+
+
+def _safe_name_part(value: object) -> str:
+    text = str(value).strip().lower()
+    text = re.sub(r"[^a-z0-9_.-]+", "-", text)
+    return text.strip("-_.") or "na"
+
+
+def _evaluation_output_dir(base_output_dir: Path, checkpoint_path: str | Path | None) -> Path:
+    if not checkpoint_path:
+        return base_output_dir
+
+    checkpoint = Path(checkpoint_path)
+    model_part = _safe_name_part(checkpoint.parent.name)
+    checkpoint_part = _safe_name_part(checkpoint.stem)
+    return base_output_dir / f"{model_part}__ckpt_{checkpoint_part}"
 
 
 def _draw_comparison_curve(
@@ -196,7 +213,7 @@ def run_evaluation(cfg: dict[str, Any], checkpoint: str | None = None) -> list[d
             }
             results.append(row)
             print(json.dumps(row, ensure_ascii=False))
-    output_dir = Path(cfg.get("output_dir", "outputs/eval"))
+    output_dir = _evaluation_output_dir(Path(cfg.get("output_dir", "outputs/eval")), checkpoint_path)
     output_dir.mkdir(parents=True, exist_ok=True)
     (output_dir / "metrics.json").write_text(json.dumps(results, ensure_ascii=False, indent=2), encoding="utf-8")
     if _plot_curves_enabled(eval_cfg):
