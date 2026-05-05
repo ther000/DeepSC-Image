@@ -97,7 +97,7 @@ def main() -> None:
             return str(p)
 
         checkpoint = None
-        use_manual_checkpoint = st.checkbox("使用非受信任的本地模型路径 (高级/危险)")
+        use_manual_checkpoint = st.checkbox("使用本地模型路径")
         if use_manual_checkpoint:
             st.warning("⚠️ 警告：加载任意路径的 .pth 文件可能导致任意代码执行，请仅用于完全受信任的本地环境。")
             checkpoint = st.text_input("Checkpoint 路径", value=str(cfg.get("checkpoint") or "")) or None
