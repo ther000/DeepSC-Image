@@ -87,6 +87,20 @@ def add_field(paragraph, instruction: str) -> None:
     run._r.append(fld_end)
 
 
+def add_tc_field(paragraph, text: str, identifier: str) -> None:
+    run = paragraph.add_run()
+    fld_begin = OxmlElement("w:fldChar")
+    fld_begin.set(qn("w:fldCharType"), "begin")
+    instr_text = OxmlElement("w:instrText")
+    instr_text.set(qn("xml:space"), "preserve")
+    instr_text.text = f'TC "{text}" \\f {identifier}'
+    fld_end = OxmlElement("w:fldChar")
+    fld_end.set(qn("w:fldCharType"), "end")
+    run._r.append(fld_begin)
+    run._r.append(instr_text)
+    run._r.append(fld_end)
+
+
 def add_text_with_citation_runs(paragraph, text: str, *, superscript_citations: bool = True) -> None:
     pattern = re.compile(r"\[(\d+(?:\s*[-,，]\s*\d+)*)\]")
     pos = 0
@@ -126,6 +140,13 @@ def add_paragraphs(doc: Document, paragraphs: list[str]) -> None:
         add_paragraph(doc, text)
 
 
+def add_blank_line(doc: Document) -> None:
+    p = doc.add_paragraph()
+    p.paragraph_format.line_spacing = 1.0
+    p.paragraph_format.space_before = Pt(0)
+    p.paragraph_format.space_after = Pt(0)
+
+
 def add_heading(doc: Document, text: str, level: int, *, in_toc: bool = True, bold: bool = False) -> None:
     p = doc.add_paragraph()
     if in_toc:
@@ -159,10 +180,14 @@ def add_caption(doc: Document, text: str) -> None:
     p.style = "Caption"
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p.paragraph_format.line_spacing = 1.0
-    p.paragraph_format.space_before = Pt(3)
-    p.paragraph_format.space_after = Pt(6)
+    p.paragraph_format.space_before = Pt(0)
+    p.paragraph_format.space_after = Pt(0)
     r = p.add_run(text)
-    set_run_font(r, 10)
+    set_run_font(r, 10.5)
+    if text.startswith("图"):
+        add_tc_field(p, text, "F")
+    elif text.startswith("表"):
+        add_tc_field(p, text, "T")
 
 
 def set_cell_text(cell, text: str, bold: bool = False) -> None:
@@ -173,41 +198,45 @@ def set_cell_text(cell, text: str, bold: bool = False) -> None:
     p.paragraph_format.line_spacing = 1.0
     p.paragraph_format.space_after = Pt(0)
     run = p.add_run(str(text))
-    set_run_font(run, 10, bold=bold)
+    set_run_font(run, 10.5, bold=bold)
 
 
-def set_table_borders(table) -> None:
+def set_table_borders(table, *, omit_vertical: bool = False) -> None:
     tbl = table._tbl
     tbl_pr = tbl.tblPr
     borders = tbl_pr.first_child_found_in("w:tblBorders")
     if borders is None:
         borders = OxmlElement("w:tblBorders")
         tbl_pr.append(borders)
+    visible_edges = {"top", "bottom", "insideH"}
+    if not omit_vertical:
+        visible_edges.update({"left", "right", "insideV"})
     for edge in ("top", "left", "bottom", "right", "insideH", "insideV"):
         tag = "w:" + edge
         element = borders.find(qn(tag))
         if element is None:
             element = OxmlElement(tag)
             borders.append(element)
-        element.set(qn("w:val"), "single")
-        element.set(qn("w:sz"), "4")
+        element.set(qn("w:val"), "single" if edge in visible_edges else "nil")
+        element.set(qn("w:sz"), "4" if edge in visible_edges else "0")
         element.set(qn("w:space"), "0")
         element.set(qn("w:color"), "000000")
 
 
 def add_table(doc: Document, caption: str, headers: list[str], rows: list[list[object]]) -> None:
+    add_blank_line(doc)
     add_caption(doc, caption)
     table = doc.add_table(rows=1, cols=len(headers))
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
     table.style = "Table Grid"
-    set_table_borders(table)
+    set_table_borders(table, omit_vertical=True)
     for idx, header in enumerate(headers):
         set_cell_text(table.rows[0].cells[idx], header, bold=True)
     for row in rows:
         cells = table.add_row().cells
         for idx, value in enumerate(row):
             set_cell_text(cells[idx], value)
-    doc.add_paragraph()
+    add_blank_line(doc)
 
 
 def add_reference_paragraph(doc: Document, text: str) -> None:
@@ -222,11 +251,13 @@ def add_picture_if_exists(doc: Document, path: Path, caption: str, width_inches:
     if not path.exists():
         add_paragraph(doc, f"（此处插入图片：{caption}，源文件未找到：{path}）")
         return
+    add_blank_line(doc)
     p = doc.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     run = p.add_run()
     run.add_picture(str(path), width=Inches(width_inches))
     add_caption(doc, caption)
+    add_blank_line(doc)
 
 
 def load_metrics(path: str) -> list[dict]:
@@ -403,12 +434,12 @@ def add_table_of_contents(doc: Document) -> None:
 
     add_heading(doc, "图录", 1, in_toc=False)
     p = doc.add_paragraph()
-    add_field(p, r'TOC \h \z \c "图"')
+    add_field(p, r"TOC \h \z \f F")
     doc.add_page_break()
 
     add_heading(doc, "表录", 1, in_toc=False)
     p = doc.add_paragraph()
-    add_field(p, r'TOC \h \z \c "表"')
+    add_field(p, r"TOC \h \z \f T")
 
 
 def add_chapter_1(doc: Document) -> None:
