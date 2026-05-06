@@ -10,7 +10,7 @@ from docx.enum.table import WD_TABLE_ALIGNMENT, WD_CELL_VERTICAL_ALIGNMENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
-from docx.shared import Cm, Inches, Pt
+from docx.shared import Cm, Inches, Pt, RGBColor
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -31,10 +31,27 @@ def set_run_font(
 ) -> None:
     run.font.name = "Times New Roman"
     run._element.rPr.rFonts.set(qn("w:eastAsia"), east_asia_font)
+    run.font.color.rgb = RGBColor(0, 0, 0)
     if size is not None:
         run.font.size = Pt(size)
     if bold is not None:
         run.bold = bold
+
+
+def set_style_font(
+    style,
+    *,
+    size: float | int | None = None,
+    east_asia_font: str,
+    bold: bool | None = None,
+) -> None:
+    style.font.name = "Times New Roman"
+    style._element.get_or_add_rPr().rFonts.set(qn("w:eastAsia"), east_asia_font)
+    style.font.color.rgb = RGBColor(0, 0, 0)
+    if size is not None:
+        style.font.size = Pt(size)
+    if bold is not None:
+        style.font.bold = bold
 
 
 def set_paragraph_format(
@@ -244,9 +261,19 @@ def configure_document(doc: Document) -> None:
     styles = doc.styles
     for style_name in ["Normal", "Body Text"]:
         style = styles[style_name]
-        style.font.name = "Times New Roman"
-        style._element.rPr.rFonts.set(qn("w:eastAsia"), "宋体")
-        style.font.size = Pt(12)
+        set_style_font(style, size=12, east_asia_font="宋体")
+    heading_specs = {
+        "Heading 1": (16, "黑体"),
+        "Heading 2": (15, "黑体"),
+        "Heading 3": (14, "黑体"),
+    }
+    for style_name, (size, east_asia_font) in heading_specs.items():
+        set_style_font(styles[style_name], size=size, east_asia_font=east_asia_font, bold=False)
+    for style_name in ["TOC 1", "TOC 2", "TOC 3"]:
+        if style_name in styles:
+            set_style_font(styles[style_name], east_asia_font="宋体")
+    if "Hyperlink" in styles:
+        set_style_font(styles["Hyperlink"], east_asia_font="宋体")
 
 
 def configure_section(section) -> None:
