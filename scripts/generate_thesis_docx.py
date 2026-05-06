@@ -582,8 +582,8 @@ def add_chapter_1(doc: Document) -> None:
     add_paragraph(doc, "在图像语义通信方向，国内研究已经开始关注深度模型结构、语义特征表达和图像重建质量。郭畅等对图像语义通信技术进行了系统综述，指出图像传输研究正在从像素压缩和比特恢复转向语义保真和任务可用性[4]。张振国等构建了基于深度学习的图像语义通信系统，验证了端到端联合优化的可行性[5]。江沸菠等提出面向6G的深度图像语义通信模型，推动了图像语义恢复从像素层重建向语义一致性优化发展[6]。相关研究表明，在图像无线传输中融合深度特征提取、注意力机制和信道适配机制，是提升复杂信道下传输质量的重要路径。")
     add_paragraph(doc, "除通用图像传输外，国内部分研究也开始面向低比特率图像编码、文本类屏幕内容图像传输、多任务图像语义传输和跨域鲁棒语义传输等更具体场景展开探索[7-11]。这些研究说明，语义通信的价值不仅在于提高传统PSNR或SSIM指标，还在于根据应用任务筛选和保留关键语义内容。对于本科毕业设计而言，若直接实现复杂多任务或跨域系统，训练成本和评价体系会显著增加，因此本文选择以图像重建为主要任务，以AWGN和Rayleigh信道为典型无线信道，以PSNR和SSIM作为可复现实验指标，在可控范围内验证深度语义通信的鲁棒传输能力。")
     add_heading(doc, "1.2.2 国外研究现状", 3)
-    add_paragraph(doc, "国外研究较早从深度联合信源信道编码角度研究无线图像传输。Bourtsoulatze等提出深度联合信源信道编码（Deep Joint Source-Channel Coding，DeepJSCC）方法，直接将图像映射为信道输入符号，并通过端到端训练实现图像重建[12]。该方法在低信噪比和带宽受限条件下相比传统分离式数字方案表现出更平滑的退化特性。Qin等总结了语义通信的基本原则与挑战[14]，Xie等提出DeepSC文本语义通信系统[13]，其端到端语义表达与信道适配思想对后续图像语义通信研究具有启发意义。")
-    add_paragraph(doc, "近年来，国外研究继续向鲁棒性、带宽自适应和复杂语义建模方向发展。DeepJSCC-l++、以移位窗口（Shifted Window，Swin）Transformer为基础的SwinJSCC和无线图像传输Transformer（Wireless Image Transmission Transformer，WITT）等工作分别从带宽自适应、移位窗口Transformer和无线图像传输Transformer角度提升图像重建性能[18-20]。也有研究从鲁棒图像语义通信和语义通信综述角度讨论未知信道、未知数据和对抗扰动场景[21-22]。总体来看，国外研究在理论模型和先进网络结构方面推进较快，但对于本科毕业设计而言，构建可解释、可运行、可评估和可展示的完整系统同样具有重要价值。")
+    add_paragraph(doc, "国外研究较早从深度联合信源信道编码角度研究无线图像传输。E. Bourtsoulatze等人提出深度联合信源信道编码（Deep Joint Source-Channel Coding，DeepJSCC）方法，直接将图像映射为信道输入符号，并通过端到端训练实现图像重建[12]。该方法在低信噪比和带宽受限条件下相比传统分离式数字方案表现出更平滑的退化特性。Z. Qin等人总结了语义通信的基本原则与挑战[13]，H. Xie等人提出DeepSC文本语义通信系统[14]，其端到端语义表达与信道适配思想对后续图像语义通信研究具有启发意义。")
+    add_paragraph(doc, "近年来，国外研究继续向鲁棒性、带宽自适应和复杂语义建模方向发展。DeepJSCC-l++、以移位窗口（Shifted Window，Swin）Transformer为基础的SwinJSCC和无线图像传输Transformer（Wireless Image Transmission Transformer，WITT）等工作分别从带宽自适应、移位窗口Transformer和无线图像传输Transformer角度提升图像重建性能[15-17]。也有研究从鲁棒图像语义通信和语义通信综述角度讨论未知信道、未知数据和对抗扰动场景[18-19]。总体来看，国外研究在理论模型和先进网络结构方面推进较快，但对于本科毕业设计而言，构建可解释、可运行、可评估和可展示的完整系统同样具有重要价值。")
     add_paragraph(doc, "已有研究为本文提供了三点启发。第一，图像语义传输不宜仅复用传统压缩后再加纠错编码的分层思路，而应让模型直接学习图像到信道符号的映射。第二，信道扰动需要进入训练闭环，否则模型只能学习普通自编码器式压缩重建，难以在低SNR和衰落条件下保持稳定。第三，系统评价不能只报告单一SNR或单张图像结果，而应在多个SNR点、多个图像样本和随机信道重复采样下统计平均性能。本文系统设计和实验方案均围绕这三点展开。")
     add_heading(doc, "1.3 研究内容与论文结构", 2)
     add_paragraph(doc, "本文主要研究内容包括四个方面。第一，梳理深度语义通信、联合信源信道编码、无线信道建模和图像质量评价指标，为系统设计提供理论基础。第二，设计卷积与注意力融合的图像语义通信模型，构建语义编码器、可微信道层和语义解码器，实现端到端图像鲁棒传输。第三，实现传统JPEG基线、训练脚本、评估脚本、单图推理和Streamlit图形界面，形成较完整的软件系统。第四，在CIFAR-10和Kodak数据集上开展实验，比较DeepSC模型与传统基线在AWGN和Rayleigh信道下的PSNR、SSIM和可视化效果。")
@@ -594,7 +594,7 @@ def add_chapter_1(doc: Document) -> None:
 def add_chapter_2(doc: Document) -> None:
     add_heading(doc, "第2章 相关理论与关键技术", 1)
     add_heading(doc, "2.1 深度语义通信理论基础", 2)
-    add_paragraph(doc, "传统通信理论主要关注符号或比特是否被准确传输，而语义通信进一步关注信息含义是否被正确传达。语义通信相关综述将其视为面向智能网络和机器理解业务的重要技术方向[14-16]。在图像场景中，语义信息不仅包括高层类别，还包括边缘、纹理、区域结构、物体轮廓和场景上下文等视觉内容。深度语义通信通过神经网络自动学习适合传输和重建的特征表示，使系统能够在信道受扰时优先保留对接收端图像恢复更重要的信息。")
+    add_paragraph(doc, "传统通信理论主要关注符号或比特是否被准确传输，而语义通信进一步关注信息含义是否被正确传达。语义通信相关综述将其视为面向智能网络和机器理解业务的重要技术方向[13,20,21]。在图像场景中，语义信息不仅包括高层类别，还包括边缘、纹理、区域结构、物体轮廓和场景上下文等视觉内容。深度语义通信通过神经网络自动学习适合传输和重建的特征表示，使系统能够在信道受扰时优先保留对接收端图像恢复更重要的信息。")
     add_paragraph(doc, "图像语义通信系统通常可抽象为编码器、信道层和解码器三部分。设输入图像为x，语义编码器为f_theta，信道扰动为H，语义解码器为g_phi，则接收端重建图像可表示为：")
     add_equation(doc, "x_hat = g_phi(H(f_theta(x)))", "(2.1)")
     add_equation_notes(
@@ -622,7 +622,7 @@ def add_chapter_2(doc: Document) -> None:
     add_paragraph(doc, "在图像传输任务中，语义特征并不等同于人工标注的类别标签，而是由神经网络在重建损失约束下自动形成的连续表示。该表示既包含颜色、边缘和纹理等低层信息，也包含区域结构、物体轮廓和场景布局等高层信息。与传统比特流相比，连续语义表示更适合与可微信道层结合，因为噪声扰动可以直接作用在特征张量上，模型也可以通过反向传播学习如何调整特征分布以降低接收端失真。")
     add_paragraph(doc, "本文所称DeepSC并非只指某一个固定网络，而是指以深度神经网络实现语义编码、语义特征传输和语义解码的端到端通信思想。在本文系统中，DeepSC图像模型具体表现为卷积注意力编码器、平均功率归一化、AWGN/Rayleigh可微信道和转置卷积解码器的组合。该结构虽然比大型Transformer模型更轻量，但模块边界清晰，便于解释信道、语义瓶颈和重建质量之间的关系。")
     add_heading(doc, "2.2 联合信源信道编码与图像传输", 2)
-    add_paragraph(doc, "联合信源信道编码（JSCC）与传统分离式编码的核心区别在于，它将信源压缩和信道保护放在统一模型中处理。传统图像传输先对图像进行压缩编码，再进行信道编码和调制，在信道质量低于设计阈值时可能出现悬崖效应。DeepJSCC及其后续带宽自适应研究表明，深度JSCC可以直接学习从图像到信道符号的连续映射，接收端再从受扰符号中恢复图像，因此在低SNR环境下往往具有更平滑的退化特性[12,17-18]。")
+    add_paragraph(doc, "联合信源信道编码（JSCC）与传统分离式编码的核心区别在于，它将信源压缩和信道保护放在统一模型中处理。传统图像传输先对图像进行压缩编码，再进行信道编码和调制，在信道质量低于设计阈值时可能出现悬崖效应。DeepJSCC及其后续带宽自适应研究表明，深度JSCC可以直接学习从图像到信道符号的连续映射，接收端再从受扰符号中恢复图像，因此在低SNR环境下往往具有更平滑的退化特性[12,15,22]。")
     add_paragraph(doc, "对于传统数字通信链路而言，压缩编码器输出的比特流通常被假设为需要精确恢复，一旦信道错误超过纠错能力，解码图像可能出现块效应、条纹、丢帧或无法解码等问题。深度JSCC和语义通信采用模拟式或连续特征传输思路，接收端即使获得的是受扰特征，也可以通过神经网络恢复出近似图像。因此，系统性能常表现为随SNR降低逐渐下降，而不是在某一阈值附近突然崩溃。本文采用JPEG基线进行轻量对照，目的正是观察传统压缩图像在噪声和衰落类退化下的视觉失真，并与端到端语义传输结果进行比较。")
     add_table(
         doc,
@@ -659,7 +659,7 @@ def add_chapter_2(doc: Document) -> None:
         ],
     )
     add_paragraph(doc, "系统在实现中对语义特征进行平均功率归一化，并根据信噪比计算噪声功率。信噪比SNR越高，信号功率相对噪声越强，图像重建通常越容易。")
-    add_paragraph(doc, "评价指标方面，本文主要采用均方误差（Mean Squared Error，MSE）、PSNR和SSIM。MSE反映像素误差，PSNR衡量整体重建失真程度，SSIM从亮度、对比度和结构角度评价图像相似性。现有图像语义通信和深度JSCC研究通常也使用PSNR、SSIM以及不同SNR下的性能曲线进行比较[12,18-20]。三者结合能够同时反映客观误差、图像清晰度和结构保持能力。")
+    add_paragraph(doc, "评价指标方面，本文主要采用均方误差（Mean Squared Error，MSE）、PSNR和SSIM。MSE反映像素误差，PSNR衡量整体重建失真程度，SSIM从亮度、对比度和结构角度评价图像相似性。现有图像语义通信和深度JSCC研究通常也使用PSNR、SSIM以及不同SNR下的性能曲线进行比较[12,15-17]。三者结合能够同时反映客观误差、图像清晰度和结构保持能力。")
     add_paragraph(doc, "在AWGN信道中，噪声服从高斯分布且与信号相互独立，常用于模拟热噪声等随机扰动。Rayleigh信道则用于描述不存在明显直达径时的多径衰落现象，接收信号不仅包含加性噪声，还受到随机幅度缩放影响。本文实现的Rayleigh信道采用样本级平坦衰落，并在接收端使用理想均衡进行幅度恢复。该假设简化了真实无线传播过程，但能够在本科设计范围内体现衰落对图像语义特征传输的影响。")
     add_paragraph(doc, "PSNR和SSIM各有侧重。PSNR由均方误差推导得到，对像素级误差敏感，适合衡量整体失真；SSIM强调局部均值、方差和协方差，对结构相似性更敏感，更接近人眼对图像结构的感知。本文在训练阶段使用MSE与SSIM混合损失，在测试阶段同时报告PSNR和SSIM，原因在于单一指标无法充分说明语义传输系统的恢复质量。例如，在低SNR下某些重建图像可能PSNR不高，但仍保留主要轮廓和空间结构，此时SSIM能够提供补充判断。")
     add_table(
@@ -823,7 +823,7 @@ def add_chapter_5(doc: Document) -> None:
     )
     add_picture_if_exists(doc, ROOT / "outputs/eval_kodak/ts_05050955__ch_awgn__snr_0_5_10_15_20__sem_64__base_32__img_32__seed_42__ckpt_best_model/psnr_vs_snr.png", "图5.3 AWGN信道PSNR-SNR曲线（Kodak评估集，语义通道数64，测试SNR=-5/0/5/10/15/20 dB）", 5.4)
     add_picture_if_exists(doc, ROOT / "outputs/eval_kodak/ts_05050955__ch_awgn__snr_0_5_10_15_20__sem_64__base_32__img_32__seed_42__ckpt_best_model/ssim_vs_snr.png", "图5.4 AWGN信道SSIM-SNR曲线（Kodak评估集，语义通道数64，测试SNR=-5/0/5/10/15/20 dB）", 5.4)
-    add_paragraph(doc, "从表5.2可以看出，AWGN信道下DeepSC模型在全部SNR条件下均明显优于JPEG基线。在-5 dB极低信噪比条件下，DeepSC模型PSNR达到21.90 dB，比JPEG基线高10.47 dB，SSIM达到0.6183，而JPEG基线仅为0.1099。这说明语义特征经过端到端训练后，对噪声扰动具有更强的容忍能力。随着SNR提高，DeepSC模型重建质量持续提升，在20 dB时达到40.02 dB PSNR和0.9935 SSIM，图像结构几乎能够稳定保持。这一现象与DeepJSCC类方法在低SNR下平滑退化的结论一致[12,18]。")
+    add_paragraph(doc, "从表5.2可以看出，AWGN信道下DeepSC模型在全部SNR条件下均明显优于JPEG基线。在-5 dB极低信噪比条件下，DeepSC模型PSNR达到21.90 dB，比JPEG基线高10.47 dB，SSIM达到0.6183，而JPEG基线仅为0.1099。这说明语义特征经过端到端训练后，对噪声扰动具有更强的容忍能力。随着SNR提高，DeepSC模型重建质量持续提升，在20 dB时达到40.02 dB PSNR和0.9935 SSIM，图像结构几乎能够稳定保持。这一现象与DeepJSCC类方法在低SNR下平滑退化的结论一致[12,15]。")
     add_paragraph(doc, "图5.3和图5.4进一步展示了AWGN信道下PSNR和SSIM随SNR变化的趋势。JPEG基线在-5 dB和0 dB时PSNR分别约为11.43 dB和15.46 dB，SSIM仅为0.1099和0.2111，说明压缩图像在强噪声下结构严重破坏。DeepSC模型即使在-5 dB下仍保持超过20 dB的PSNR，并在0 dB时达到29.73 dB和0.8899 SSIM，说明端到端训练使模型能够将图像信息编码到对噪声更稳定的特征空间中。在高SNR区域，JPEG基线随噪声减小而提升，但DeepSC仍保持更高SSIM，表明其对结构信息恢复更充分。")
     add_heading(doc, "5.3 Rayleigh信道实验结果分析", 2)
     add_table(
@@ -834,7 +834,7 @@ def add_chapter_5(doc: Document) -> None:
     )
     add_picture_if_exists(doc, ROOT / "outputs/eval_kodak/ts_05050958__ch_rayleigh__snr_0_5_10_15_20__sem_64__base_32__img_32__seed_42__ckpt_best_model/psnr_vs_snr.png", "图5.5 Rayleigh信道PSNR-SNR曲线（Kodak评估集，语义通道数64，测试SNR=-5/0/5/10/15/20 dB）", 5.4)
     add_picture_if_exists(doc, ROOT / "outputs/eval_kodak/ts_05050958__ch_rayleigh__snr_0_5_10_15_20__sem_64__base_32__img_32__seed_42__ckpt_best_model/ssim_vs_snr.png", "图5.6 Rayleigh信道SSIM-SNR曲线（Kodak评估集，语义通道数64，测试SNR=-5/0/5/10/15/20 dB）", 5.4)
-    add_paragraph(doc, "Rayleigh信道包含随机衰落，对图像传输更具挑战。从表5.3可以看出，DeepSC模型在Rayleigh信道下仍表现出较强鲁棒性。-5 dB时DeepSC模型达到22.46 dB PSNR和0.6451 SSIM，而JPEG基线仅为11.86 dB和0.1484；20 dB时DeepSC模型达到38.11 dB和0.9929。与AWGN信道相比，Rayleigh信道下DeepSC在高SNR时PSNR略低，但SSIM仍保持在较高水平，说明模型对图像结构信息的恢复较稳定。鲁棒语义通信研究也强调了跨信道扰动下语义表示稳定性的重要性[10,21]。")
+    add_paragraph(doc, "Rayleigh信道包含随机衰落，对图像传输更具挑战。从表5.3可以看出，DeepSC模型在Rayleigh信道下仍表现出较强鲁棒性。-5 dB时DeepSC模型达到22.46 dB PSNR和0.6451 SSIM，而JPEG基线仅为11.86 dB和0.1484；20 dB时DeepSC模型达到38.11 dB和0.9929。与AWGN信道相比，Rayleigh信道下DeepSC在高SNR时PSNR略低，但SSIM仍保持在较高水平，说明模型对图像结构信息的恢复较稳定。鲁棒语义通信研究也强调了跨信道扰动下语义表示稳定性的重要性[10,18]。")
     add_paragraph(doc, "图5.5和图5.6说明，模型不只是在加性噪声环境中有效，在存在乘性衰落和均衡误差的情况下也能维持较好恢复质量。JPEG基线在Rayleigh信道下提升幅度有限，20 dB时PSNR仍低于18 dB，表明类衰落退化对传统压缩图像视觉质量影响较大。DeepSC模型在5 dB后SSIM已超过0.96，10 dB后接近0.985，说明主要图像结构可以被稳定恢复。该结果与AWGN实验共同验证了本文系统对不同信道扰动的适应能力。")
     add_heading(doc, "5.4 压缩率、系统功能与可视化分析", 2)
     add_table(
@@ -904,28 +904,28 @@ def add_chapter_6(doc: Document) -> None:
 def add_references(doc: Document) -> None:
     add_heading(doc, "参考文献", 1)
     refs = [
-        "[1] 徐英姿, 刘原, 时梦然, 韩书君, 董辰, 王碧舳. 语义在通信中的应用综述[J]. 电信科学, 2022, 38(S1): 43-59.",
-        "[2] 牛凯, 戴金晟, 张平, 姚圣时, 王思贤. 面向6G的语义通信[J]. 移动通信, 2021, 45(04): 85-90.",
-        "[3] 张平, 牛凯, 姚圣时, 戴金晟. 面向未来的语义通信: 基本原理与实现方法[J]. 通信学报, 2023, 44(05): 1-14.",
+        "[1] 徐英姿, 刘原, 时梦然, 等. 语义在通信中的应用综述[J]. 电信科学, 2022, 38(S1): 43-59.",
+        "[2] 牛凯, 戴金晟, 张平, 等. 面向6G的语义通信[J]. 移动通信, 2021, 45(04): 85-90.",
+        "[3] 张平, 牛凯, 姚圣时, 等. 面向未来的语义通信: 基本原理与实现方法[J]. 通信学报, 2023, 44(05): 1-14.",
         "[4] 郭畅, 何占豪, 杨君刚, 等. 图像语义通信技术综述与展望[J]. 电讯技术, 2025, 65(02): 329-338.",
         "[5] 张振国, 杨倩倩, 贺诗波. 基于深度学习的图像语义通信系统[J]. 中兴通讯技术, 2023, 29(02): 54-61.",
         "[6] 江沸菠, 彭于波, 董莉. 面向6G的深度图像语义通信模型[J]. 通信学报, 2023, 44(03): 198-208.",
-        "[7] 何晨光. 基于语义通信的低比特率图像语义编码方法[D]. 电子科技大学, 2023.",
-        "[8] 伍忠东. 基于多任务的图像语义传输方法[D]. 重庆邮电大学, 2024.",
-        "[9] 杨舒涵. 基于深度灵活编码策略与性能预测的无线语义图像传输系统[D]. 北京邮电大学, 2024.",
-        "[10] 余继科. 鲁棒语义传输: 跨域协作的联合源信道编码[D]. 电子科技大学, 2024.",
-        "[11] 祝志远. 面向文本类屏幕内容图像传输的语义通信系统[D]. 北京邮电大学, 2024.",
-        "[12] Bourtsoulatze E, Kurka D B, Gunduz D. Deep Joint Source-Channel Coding for Wireless Image Transmission[J]. IEEE Transactions on Cognitive Communications and Networking, 2019, 5(3): 567-579.",
-        "[13] Xie H, Qin Z, Li G Y, Juang B H. Deep Learning Enabled Semantic Communication Systems[J]. IEEE Transactions on Signal Processing, 2021, 69: 2663-2675.",
-        "[14] Qin Z, Tao X, Lu J, et al. Semantic Communications: Principles and Challenges[J]. arXiv preprint arXiv:2201.01389, 2021.",
-        "[15] Strinati E C, Barbarossa S, Gonzalez-Jimenez J L, et al. Semantics-Empowered Communications: A Tutorial-Cum-Survey[J]. IEEE Journal on Selected Areas in Communications, 2023, 41(1): 1-27.",
-        "[16] Lan Q, Wen D, Zhang Z, et al. What is Semantic Communication? A View on Conveying Meaning in the Era of Machine Intelligence[J]. Journal of Communications and Information Networks, 2021, 6(4): 336-371.",
-        "[17] Kurka D B, Gunduz D. DeepJSCC-l: Deep Joint Source-Channel Coding for Wireless Image Transmission[C]//IEEE International Conference on Communications Workshops. 2019.",
-        "[18] Kurka D B, Gunduz D. DeepJSCC-l++: Robust and Bandwidth-Adaptive Wireless Image Transmission[J]. IEEE Transactions on Wireless Communications, 2021, 20(9): 5907-5923.",
-        "[19] Yang K, Wang S, Dai J, Qin Z, Niu K, Zhang P. WITT: A Wireless Image Transmission Transformer for Semantic Communications[C]//IEEE International Conference on Acoustics, Speech and Signal Processing. 2023.",
-        "[20] Liu Z, Wang J, Liang Y, et al. SwinJSCC: Taming Swin Transformer for Deep Joint Source-Channel Coding[C]//IEEE International Conference on Communications. 2023.",
-        "[21] Zhao L, Wang R, Cao Q, et al. A Robust Semantic Communication System for Image Transmission[C]//International Conference on Wireless Communications and Signal Processing. 2024: 1474-1479.",
-        "[22] Chen X, Xu J, Guo H, et al. Semantic Communication: A Survey on Research Landscape, Challenges, and Future Directions[J]. IEEE Communications Surveys & Tutorials, 2024.",
+        "[7] 何晨光. 基于语义通信的低比特率图像语义编码方法[D]. 成都: 电子科技大学, 2023.",
+        "[8] 伍忠东. 基于多任务的图像语义传输方法[D]. 重庆: 重庆邮电大学, 2024.",
+        "[9] 杨舒涵. 基于深度灵活编码策略与性能预测的无线语义图像传输系统[D]. 北京: 北京邮电大学, 2024.",
+        "[10] 余继科. 鲁棒语义传输: 跨域协作的联合源信道编码[D]. 成都: 电子科技大学, 2024.",
+        "[11] 祝志远. 面向文本类屏幕内容图像传输的语义通信系统[D]. 北京: 北京邮电大学, 2024.",
+        "[12] Bourtsoulatze E, Kurka D B, Gunduz D. Deep joint source-channel coding for wireless image transmission[J]. IEEE Transactions on Cognitive Communications and Networking, 2019, 5(3): 567-579.",
+        "[13] Qin Z, Tao X, Lu J, et al. Semantic communications: principles and challenges[J]. arXiv preprint arXiv:2201.01389, 2021.",
+        "[14] Xie H, Qin Z, Li G Y, et al. Deep learning enabled semantic communication systems[J]. IEEE Transactions on Signal Processing, 2021, 69: 2663-2675.",
+        "[15] Kurka D B, Gunduz D. DeepJSCC-l++: robust and bandwidth-adaptive wireless image transmission[J]. IEEE Transactions on Wireless Communications, 2021, 20(9): 5907-5923.",
+        "[16] Yang K, Wang S, Dai J, et al. WITT: a wireless image transmission transformer for semantic communications[C]//IEEE International Conference on Acoustics, Speech and Signal Processing. 2023.",
+        "[17] Liu Z, Wang J, Liang Y, et al. SwinJSCC: taming Swin Transformer for deep joint source-channel coding[C]//IEEE International Conference on Communications. 2023.",
+        "[18] Zhao L, Wang R, Cao Q, et al. A robust semantic communication system for image transmission[C]//International Conference on Wireless Communications and Signal Processing. 2024: 1474-1479.",
+        "[19] Chen X, Xu J, Guo H, et al. Semantic communication: a survey on research landscape, challenges, and future directions[J]. IEEE Communications Surveys & Tutorials, 2024.",
+        "[20] Strinati E C, Barbarossa S, Gonzalez-Jimenez J L, et al. Semantics-empowered communications: a tutorial-cum-survey[J]. IEEE Journal on Selected Areas in Communications, 2023, 41(1): 1-27.",
+        "[21] Lan Q, Wen D, Zhang Z, et al. What is semantic communication? A view on conveying meaning in the era of machine intelligence[J]. Journal of Communications and Information Networks, 2021, 6(4): 336-371.",
+        "[22] Kurka D B, Gunduz D. DeepJSCC-l: deep joint source-channel coding for wireless image transmission[C]//IEEE International Conference on Communications Workshops. 2019.",
     ]
     for ref in refs:
         add_reference_paragraph(doc, ref)
