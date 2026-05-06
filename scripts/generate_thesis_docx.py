@@ -69,6 +69,7 @@ def set_paragraph_format(
 
 def add_field(paragraph, instruction: str) -> None:
     run = paragraph.add_run()
+    set_run_font(run, 10)
     fld_begin = OxmlElement("w:fldChar")
     fld_begin.set(qn("w:fldCharType"), "begin")
     instr_text = OxmlElement("w:instrText")
@@ -85,6 +86,22 @@ def add_field(paragraph, instruction: str) -> None:
     run._r.append(fld_separate)
     run._r.append(placeholder)
     run._r.append(fld_end)
+
+
+def set_paragraph_bottom_border(paragraph) -> None:
+    p_pr = paragraph._p.get_or_add_pPr()
+    p_bdr = p_pr.find(qn("w:pBdr"))
+    if p_bdr is None:
+        p_bdr = OxmlElement("w:pBdr")
+        p_pr.append(p_bdr)
+    bottom = p_bdr.find(qn("w:bottom"))
+    if bottom is None:
+        bottom = OxmlElement("w:bottom")
+        p_bdr.append(bottom)
+    bottom.set(qn("w:val"), "single")
+    bottom.set(qn("w:sz"), "6")
+    bottom.set(qn("w:space"), "1")
+    bottom.set(qn("w:color"), "000000")
 
 
 def add_tc_field(paragraph, text: str, identifier: str) -> None:
@@ -227,29 +244,38 @@ def set_table_borders(table, *, omit_vertical: bool = False, visible_edges: set[
         element.set(qn("w:color"), "000000")
 
 
-def add_equation(doc: Document, equation: str, number: str) -> None:
-    table = doc.add_table(rows=1, cols=3)
-    table.alignment = WD_TABLE_ALIGNMENT.CENTER
-    set_table_borders(table, visible_edges=set())
-    widths = [Cm(3.0), Cm(12.0), Cm(3.0)]
-    for idx, width in enumerate(widths):
-        table.columns[idx].width = width
-        table.cell(0, idx).width = width
-    cells = table.rows[0].cells
-    for cell in cells:
-        cell.vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.CENTER
-        p = cell.paragraphs[0]
+def add_equation(doc: Document, equation: str, number: str | None = None) -> None:
+    p = doc.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.paragraph_format.line_spacing = 1.5
+    p.paragraph_format.space_before = Pt(0)
+    p.paragraph_format.space_after = Pt(0)
+    text = equation if number is None else f"{equation}    {number}"
+    run = p.add_run(text)
+    set_run_font(run, 12)
+
+
+def add_equation_notes(doc: Document, notes: list[tuple[str, str]]) -> None:
+    intro = doc.add_paragraph()
+    intro.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    intro.paragraph_format.line_spacing = 1.5
+    intro.paragraph_format.space_before = Pt(0)
+    intro.paragraph_format.space_after = Pt(0)
+    intro.paragraph_format.first_line_indent = None
+    run = intro.add_run("　　式中")
+    set_run_font(run, 12)
+
+    for symbol, explanation in notes:
+        p = doc.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
         p.paragraph_format.line_spacing = 1.5
         p.paragraph_format.space_before = Pt(0)
         p.paragraph_format.space_after = Pt(0)
-    formula_p = cells[1].paragraphs[0]
-    formula_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    formula_run = formula_p.add_run(equation)
-    set_run_font(formula_run, 12)
-    number_p = cells[2].paragraphs[0]
-    number_p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-    number_run = number_p.add_run(number)
-    set_run_font(number_run, 12)
+        p.paragraph_format.left_indent = Pt(116)
+        p.paragraph_format.first_line_indent = Pt(-92)
+        p.paragraph_format.tab_stops.add_tab_stop(Pt(92))
+        run = p.add_run(f"　　{symbol}\t——{explanation}")
+        set_run_font(run, 12)
 
 
 def add_table(doc: Document, caption: str, headers: list[str], rows: list[list[object]]) -> None:
@@ -369,7 +395,43 @@ def set_section_page_number_start(section, start: int, fmt: str = "decimal") -> 
     pg_num_type.set(qn("w:fmt"), fmt)
 
 
-def set_header_footer(section, header_text: str, *, roman: bool = False, start: int | None = 1) -> None:
+def set_section_page_number_continue(section, fmt: str = "decimal") -> None:
+    sect_pr = section._sectPr
+    pg_num_type = sect_pr.find(qn("w:pgNumType"))
+    if pg_num_type is None:
+        pg_num_type = OxmlElement("w:pgNumType")
+        sect_pr.append(pg_num_type)
+    if qn("w:start") in pg_num_type.attrib:
+        del pg_num_type.attrib[qn("w:start")]
+    pg_num_type.set(qn("w:fmt"), fmt)
+
+
+def clear_header_footer(section) -> None:
+    for part in [
+        section.header,
+        section.even_page_header,
+        section.footer,
+        section.even_page_footer,
+        section.first_page_header,
+        section.first_page_footer,
+    ]:
+        part.is_linked_to_previous = False
+        for paragraph in part.paragraphs:
+            paragraph.text = ""
+
+
+def add_page_number_footer(section) -> None:
+    for footer_part in [section.footer, section.even_page_footer]:
+        footer = footer_part.paragraphs[0]
+        footer.text = ""
+        footer.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        footer.paragraph_format.line_spacing = 1.5
+        footer.paragraph_format.space_before = Pt(0)
+        footer.paragraph_format.space_after = Pt(0)
+        add_field(footer, "PAGE")
+
+
+def set_header_footer(section, header_text: str | None, *, roman: bool = False, start: int | None = 1) -> None:
     section.header.is_linked_to_previous = False
     section.even_page_header.is_linked_to_previous = False
     section.footer.is_linked_to_previous = False
@@ -378,33 +440,48 @@ def set_header_footer(section, header_text: str, *, roman: bool = False, start: 
     header = section.header.paragraphs[0]
     header.text = ""
     header.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    run = header.add_run(header_text)
-    set_run_font(run, 10)
+    header.paragraph_format.line_spacing = 1.0
+    header.paragraph_format.space_before = Pt(0)
+    header.paragraph_format.space_after = Pt(0)
+    if header_text:
+        run = header.add_run(header_text)
+        set_run_font(run, 10)
+        set_paragraph_bottom_border(header)
 
     even_header = section.even_page_header.paragraphs[0]
     even_header.text = ""
     even_header.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    even_header.paragraph_format.line_spacing = 1.0
+    even_header.paragraph_format.space_before = Pt(0)
+    even_header.paragraph_format.space_after = Pt(0)
     even_run = even_header.add_run("重庆邮电大学本科毕业设计（论文）")
     set_run_font(even_run, 10)
+    set_paragraph_bottom_border(even_header)
 
-    footer = section.footer.paragraphs[0]
-    footer.text = ""
-    footer.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    add_field(footer, "PAGE")
-
-    even_footer = section.even_page_footer.paragraphs[0]
-    even_footer.text = ""
-    even_footer.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    add_field(even_footer, "PAGE")
+    add_page_number_footer(section)
 
     if start is not None:
-        set_section_page_number_start(section, start, "lowerRoman" if roman else "decimal")
+        set_section_page_number_start(section, start, "upperRoman" if roman else "decimal")
+    else:
+        set_section_page_number_continue(section, "upperRoman" if roman else "decimal")
 
 
-def add_configured_section(doc: Document, *, header_text: str, roman: bool = False, start: int | None = 1) -> None:
+def set_footer_only(section, *, roman: bool = False, start: int | None = 1) -> None:
+    clear_header_footer(section)
+    add_page_number_footer(section)
+    if start is not None:
+        set_section_page_number_start(section, start, "upperRoman" if roman else "decimal")
+    else:
+        set_section_page_number_continue(section, "upperRoman" if roman else "decimal")
+
+
+def add_configured_section(doc: Document, *, header_text: str | None, roman: bool = False, start: int | None = 1) -> None:
     section = doc.add_section(WD_SECTION_START.NEW_PAGE)
     configure_section(section)
-    set_header_footer(section, header_text, roman=roman, start=start)
+    if header_text is None:
+        set_footer_only(section, roman=roman, start=start)
+    else:
+        set_header_footer(section, header_text, roman=roman, start=start)
 
 
 def enable_field_update_on_open(doc: Document) -> None:
@@ -475,7 +552,7 @@ def add_abstract(doc: Document) -> None:
 
 
 def add_table_of_contents(doc: Document) -> None:
-    set_header_footer(doc.sections[-1], "目录", roman=True, start=1)
+    set_header_footer(doc.sections[-1], "目录", roman=True, start=None)
     add_heading(doc, "目录", 1, in_toc=False)
     p = doc.add_paragraph()
     add_field(p, r'TOC \o "1-3" \h \z \u')
@@ -520,8 +597,27 @@ def add_chapter_2(doc: Document) -> None:
     add_paragraph(doc, "传统通信理论主要关注符号或比特是否被准确传输，而语义通信进一步关注信息含义是否被正确传达。语义通信相关综述将其视为面向智能网络和机器理解业务的重要技术方向[14-16]。在图像场景中，语义信息不仅包括高层类别，还包括边缘、纹理、区域结构、物体轮廓和场景上下文等视觉内容。深度语义通信通过神经网络自动学习适合传输和重建的特征表示，使系统能够在信道受扰时优先保留对接收端图像恢复更重要的信息。")
     add_paragraph(doc, "图像语义通信系统通常可抽象为编码器、信道层和解码器三部分。设输入图像为x，语义编码器为f_theta，信道扰动为H，语义解码器为g_phi，则接收端重建图像可表示为：")
     add_equation(doc, "x_hat = g_phi(H(f_theta(x)))", "(2.1)")
-    add_paragraph(doc, "其中，theta和phi分别表示编码器与解码器参数。模型训练的目标是最小化原图x与重建图x_hat之间的差异，通常可写为：")
+    add_equation_notes(
+        doc,
+        [
+            ("x_hat", "接收端重建图像。"),
+            ("g_phi", "语义解码器函数，phi为解码器参数。"),
+            ("H", "信道扰动函数。"),
+            ("f_theta", "语义编码器函数，theta为编码器参数。"),
+            ("x", "输入原始图像。"),
+        ],
+    )
+    add_paragraph(doc, "模型训练的目标是最小化原图x与重建图x_hat之间的差异，通常可写为：")
     add_equation(doc, "min_{theta, phi} E[L(x, x_hat)]", "(2.2)")
+    add_equation_notes(
+        doc,
+        [
+            ("theta", "语义编码器参数。"),
+            ("phi", "语义解码器参数。"),
+            ("E", "数学期望。"),
+            ("L", "训练损失函数。"),
+        ],
+    )
     add_paragraph(doc, "该目标体现了端到端联合优化思想，即发送端特征提取、信道适配和接收端图像重建不再被割裂处理，而是在同一损失函数约束下共同学习。")
     add_paragraph(doc, "在图像传输任务中，语义特征并不等同于人工标注的类别标签，而是由神经网络在重建损失约束下自动形成的连续表示。该表示既包含颜色、边缘和纹理等低层信息，也包含区域结构、物体轮廓和场景布局等高层信息。与传统比特流相比，连续语义表示更适合与可微信道层结合，因为噪声扰动可以直接作用在特征张量上，模型也可以通过反向传播学习如何调整特征分布以降低接收端失真。")
     add_paragraph(doc, "本文所称DeepSC并非只指某一个固定网络，而是指以深度神经网络实现语义编码、语义特征传输和语义解码的端到端通信思想。在本文系统中，DeepSC图像模型具体表现为卷积注意力编码器、平均功率归一化、AWGN/Rayleigh可微信道和转置卷积解码器的组合。该结构虽然比大型Transformer模型更轻量，但模块边界清晰，便于解释信道、语义瓶颈和重建质量之间的关系。")
@@ -543,8 +639,25 @@ def add_chapter_2(doc: Document) -> None:
     add_heading(doc, "2.3 无线信道建模与评价指标", 2)
     add_paragraph(doc, "为了模拟无线图像传输过程，本文系统实现了none、AWGN和Rayleigh三类信道。其中AWGN信道用于描述加性白噪声影响，若发送特征为s、接收特征为y、噪声为n，则可表示为：")
     add_equation(doc, "y = s + n", "(2.3)")
+    add_equation_notes(
+        doc,
+        [
+            ("y", "接收端语义特征。"),
+            ("s", "发送端语义特征。"),
+            ("n", "加性高斯白噪声。"),
+        ],
+    )
     add_paragraph(doc, "Rayleigh信道进一步考虑无线多径传播导致的幅度衰落，若衰落系数为h，则可表示为：")
     add_equation(doc, "y = h s + n", "(2.4)")
+    add_equation_notes(
+        doc,
+        [
+            ("y", "接收端语义特征，含义同式(2.3)。"),
+            ("h", "Rayleigh衰落系数。"),
+            ("s", "发送端语义特征，含义同式(2.3)。"),
+            ("n", "加性高斯白噪声，含义同式(2.3)。"),
+        ],
+    )
     add_paragraph(doc, "系统在实现中对语义特征进行平均功率归一化，并根据信噪比计算噪声功率。信噪比SNR越高，信号功率相对噪声越强，图像重建通常越容易。")
     add_paragraph(doc, "评价指标方面，本文主要采用均方误差（Mean Squared Error，MSE）、PSNR和SSIM。MSE反映像素误差，PSNR衡量整体重建失真程度，SSIM从亮度、对比度和结构角度评价图像相似性。现有图像语义通信和深度JSCC研究通常也使用PSNR、SSIM以及不同SNR下的性能曲线进行比较[12,18-20]。三者结合能够同时反映客观误差、图像清晰度和结构保持能力。")
     add_paragraph(doc, "在AWGN信道中，噪声服从高斯分布且与信号相互独立，常用于模拟热噪声等随机扰动。Rayleigh信道则用于描述不存在明显直达径时的多径衰落现象，接收信号不仅包含加性噪声，还受到随机幅度缩放影响。本文实现的Rayleigh信道采用样本级平坦衰落，并在接收端使用理想均衡进行幅度恢复。该假设简化了真实无线传播过程，但能够在本科设计范围内体现衰落对图像语义特征传输的影响。")
@@ -630,7 +743,18 @@ def add_chapter_4(doc: Document) -> None:
     add_paragraph(doc, "功率归一化是信道建模中的重要步骤。若语义编码器输出特征幅度没有约束，模型可能通过无限增大发送特征幅度来抵消噪声，从而得到不符合通信系统功率约束的结果。本文在编码器输出端对每个样本的语义张量进行平均功率归一化，使其单位平均功率传输，再根据信道SNR计算噪声方差。这样既保持了模型可训练性，也使不同语义通道数之间的实验对比更公平。")
     add_paragraph(doc, "训练损失采用MSE与SSIM的混合形式：")
     add_equation(doc, "L = (1 - alpha) MSE(x, x_hat) + alpha (1 - SSIM(x, x_hat))", "(4.1)")
-    add_paragraph(doc, "其中alpha为SSIM权重，当前配置中取0.2。MSE约束像素级误差，SSIM约束结构相似性，二者结合能够在清晰度和结构保持之间取得较好的平衡。优化器采用自适应动量估计（Adaptive Moment Estimation，Adam）的带权重衰减变体（Adam with Weight Decay，AdamW），学习率为0.001，权重衰减为0.0001。")
+    add_equation_notes(
+        doc,
+        [
+            ("L", "混合训练损失函数。"),
+            ("alpha", "SSIM损失权重，当前配置中取0.2。"),
+            ("MSE", "均方误差项，用于约束像素级误差。"),
+            ("x", "输入原始图像。"),
+            ("x_hat", "模型重建图像。"),
+            ("SSIM", "结构相似性项，用于约束图像结构保持能力。"),
+        ],
+    )
+    add_paragraph(doc, "MSE与SSIM结合能够在清晰度和结构保持之间取得较好的平衡。优化器采用自适应动量估计（Adaptive Moment Estimation，Adam）的带权重衰减变体（Adam with Weight Decay，AdamW），学习率为0.001，权重衰减为0.0001。")
     add_heading(doc, "4.3 基线对照、评估与可视化实现", 2)
     add_paragraph(doc, "为了验证DeepSC模型的有效性，系统实现了JPEG基线模块。该模块首先使用Python图像库（Python Imaging Library，PIL）在内存中完成JPEG编码和解码，然后根据所选信道向图像张量加入噪声或衰落类退化。虽然该基线不是完整的传统通信链路，但能够作为轻量级对照，帮助观察传统压缩图像在噪声信道下的失真情况。")
     add_paragraph(doc, "JPEG基线的设计遵循轻量、可运行和可解释原则。系统没有引入复杂的更好的便携式图形（Better Portable Graphics，BPG）编码、信道编码、调制和软解调流程，而是用JPEG压缩后的图像作为传统压缩表示，再叠加与信道相关的视觉退化。该设计的优势是部署简单、运行速度快、便于在GUI中实时展示；不足是不能代表完整传统通信系统的最优性能。因此，本文在实验结论中仅将其作为工程基线和视觉对照，而不声称其覆盖所有传统方案。")
@@ -856,8 +980,9 @@ def main() -> None:
     doc = Document()
     configure_document(doc)
     add_front_matter(doc)
+    add_configured_section(doc, header_text=None, roman=True, start=1)
     add_abstract(doc)
-    add_configured_section(doc, header_text="重庆邮电大学本科毕业设计（论文）", roman=True)
+    add_configured_section(doc, header_text="目录", roman=True, start=None)
     add_table_of_contents(doc)
     add_configured_section(doc, header_text="重庆邮电大学本科毕业设计（论文）", roman=False)
     add_chapter_1(doc)
