@@ -126,7 +126,7 @@ def add_paragraphs(doc: Document, paragraphs: list[str]) -> None:
         add_paragraph(doc, text)
 
 
-def add_heading(doc: Document, text: str, level: int, *, in_toc: bool = True) -> None:
+def add_heading(doc: Document, text: str, level: int, *, in_toc: bool = True, bold: bool = False) -> None:
     p = doc.add_paragraph()
     if in_toc:
         p.style = f"Heading {level}"
@@ -140,9 +140,18 @@ def add_heading(doc: Document, text: str, level: int, *, in_toc: bool = True) ->
     set_run_font(
         r,
         16 if level == 1 else 15 if level == 2 else 14,
-        bold=False,
+        bold=bold,
         east_asia_font="黑体",
     )
+
+
+def add_keyword_line(doc: Document, label: str, keywords: str) -> None:
+    p = doc.add_paragraph()
+    set_paragraph_format(p, first_line=True, align=WD_ALIGN_PARAGRAPH.JUSTIFY)
+    label_run = p.add_run(label)
+    set_run_font(label_run, 12, bold=True)
+    keyword_run = p.add_run(keywords)
+    set_run_font(keyword_run, 12)
 
 
 def add_caption(doc: Document, text: str) -> None:
@@ -374,13 +383,16 @@ def add_abstract(doc: Document) -> None:
         doc,
         "本文围绕基于深度语义通信的图像鲁棒传输系统设计与实现展开研究，面向传统图像传输方案在低信噪比、带宽受限和信道波动条件下重建质量下降的问题，设计并实现了一套集模型训练、信道仿真、基线对照、指标评估和图形化展示于一体的图像传输系统。系统采用端到端联合信源信道编码思想，以卷积神经网络（Convolutional Neural Network，CNN）为主体构建语义编码器和语义解码器，在编码端融合压缩激励（Squeeze-and-Excitation，SE）通道注意力与空间注意力机制，将输入图像映射为归一化语义特征；在传输过程中引入可微加性高斯白噪声（Additive White Gaussian Noise，AWGN）信道和瑞利（Rayleigh）衰落信道，使模型能够在训练阶段学习对噪声和衰落更稳定的图像表示；在接收端通过转置卷积解码结构完成图像重建。系统同时实现联合图像专家小组（Joint Photographic Experts Group，JPEG）基线链路、峰值信噪比（Peak Signal-to-Noise Ratio，PSNR）与结构相似性（Structural Similarity，SSIM）评价指标、批量评估脚本和Streamlit可视化界面，支持图像上传、信噪比（Signal-to-Noise Ratio，SNR）调节、信道类型选择以及原图、深度语义通信（Deep Semantic Communication，DeepSC）重构图和传统基线重构图的对比展示。实验以CIFAR-10作为训练数据，以Kodak图像集作为测试数据，在-5 dB至20 dB的多种信噪比条件下开展蒙特卡洛评估。结果表明，在AWGN信道下，64语义通道模型在-5 dB时达到21.90 dB PSNR和0.6183 SSIM，明显高于JPEG基线的11.43 dB和0.1099；在20 dB时达到40.02 dB PSNR和0.9935 SSIM。Rayleigh信道下，模型在-5 dB时仍达到22.46 dB PSNR和0.6451 SSIM，在20 dB时达到38.11 dB PSNR和0.9929 SSIM，说明所设计系统在强噪声和衰落环境中具有较好的鲁棒传输能力。研究结果表明，将深度语义表示学习与可微信道建模联合优化，能够提升图像无线传输的重建质量与结构保持能力，也为后续面向第六代移动通信（6th Generation，6G）智能业务的图像语义通信系统设计提供了工程实现基础。",
     )
-    add_paragraph(doc, "关键词：语义通信；图像鲁棒传输；联合信源信道编码；信道建模；图像重建", first_line=False)
-    add_heading(doc, "Abstract", 1, in_toc=False)
+    add_paragraph(doc, "")
+    add_keyword_line(doc, "关键词：", "语义通信；图像鲁棒传输；联合信源信道编码；信道建模；图像重建")
+    doc.add_page_break()
+    add_heading(doc, "Abstract", 1, in_toc=False, bold=True)
     add_paragraph(
         doc,
         "This thesis studies the design and implementation of a robust image transmission system based on deep semantic communication. To address the degradation of conventional image transmission schemes under low signal-to-noise ratio, limited bandwidth and fluctuating wireless channels, an integrated system is developed for model training, channel simulation, baseline comparison, performance evaluation and graphical demonstration. The system follows the principle of end-to-end joint source-channel coding (JSCC). A convolutional semantic encoder and decoder are constructed with squeeze-and-excitation (SE) channel attention and spatial attention. The encoder maps input images into normalized semantic features, differentiable additive white Gaussian noise (AWGN) and Rayleigh channels are embedded into the transmission process, and the decoder reconstructs images from the disturbed semantic features. The implementation also includes a Joint Photographic Experts Group (JPEG) baseline, peak signal-to-noise ratio (PSNR) and structural similarity (SSIM) metrics, batch evaluation scripts and a Streamlit-based graphical user interface (GUI) that supports image uploading, signal-to-noise ratio (SNR) adjustment, channel selection, and visual comparison among the original image, the deep semantic communication (DeepSC) reconstruction and the conventional baseline. CIFAR-10 is used for training and the Kodak image set is used for evaluation. Monte Carlo experiments are conducted under SNR values from -5 dB to 20 dB. Experimental results show that, under the AWGN channel, the 64-channel semantic model achieves 21.90 dB PSNR and 0.6183 SSIM at -5 dB, significantly outperforming the JPEG baseline with 11.43 dB and 0.1099. At 20 dB, it reaches 40.02 dB PSNR and 0.9935 SSIM. Under the Rayleigh channel, the model still achieves 22.46 dB PSNR and 0.6451 SSIM at -5 dB, and 38.11 dB PSNR and 0.9929 SSIM at 20 dB. These results demonstrate that the proposed system provides robust image transmission capability under noisy and fading channels. The study confirms that jointly optimizing deep semantic representation and differentiable channel modeling can improve image reconstruction quality and structural preservation, providing a practical basis for future image semantic communication systems in 6G-oriented intelligent services.",
     )
-    add_paragraph(doc, "Keywords: semantic communication; robust image transmission; joint source-channel coding; channel modeling; image reconstruction", first_line=False)
+    add_paragraph(doc, "")
+    add_keyword_line(doc, "Keywords: ", "semantic communication; robust image transmission; joint source-channel coding; channel modeling; image reconstruction")
 
 
 def add_table_of_contents(doc: Document) -> None:
