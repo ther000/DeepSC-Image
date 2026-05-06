@@ -183,7 +183,7 @@ def add_caption(doc: Document, text: str) -> None:
     p.paragraph_format.space_before = Pt(0)
     p.paragraph_format.space_after = Pt(0)
     r = p.add_run(text)
-    set_run_font(r, 10.5)
+    set_run_font(r, 10.5, bold=False)
     if text.startswith("图"):
         add_tc_field(p, text, "F")
     elif text.startswith("表"):
@@ -312,6 +312,8 @@ def configure_document(doc: Document) -> None:
     for style_name in ["TOC 1", "TOC 2", "TOC 3"]:
         if style_name in styles:
             set_style_font(styles[style_name], east_asia_font="宋体")
+    if "Caption" in styles:
+        set_style_font(styles["Caption"], size=10.5, east_asia_font="宋体", bold=False)
     if "Hyperlink" in styles:
         set_style_font(styles["Hyperlink"], east_asia_font="宋体")
 
