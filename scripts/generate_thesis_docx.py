@@ -217,13 +217,13 @@ def add_abstract(doc: Document) -> None:
     add_heading(doc, "摘要", 1)
     add_paragraph(
         doc,
-        "本文围绕基于深度语义通信的图像鲁棒传输系统设计与实现展开研究，面向传统图像传输方案在低信噪比、带宽受限和信道波动条件下重建质量下降的问题，设计并实现了一套集模型训练、信道仿真、基线对照、指标评估和图形化展示于一体的图像传输系统。系统采用端到端联合信源信道编码思想，以卷积神经网络为主体构建语义编码器和语义解码器，在编码端融合SE通道注意力与空间注意力机制，将输入图像映射为归一化语义特征；在传输过程中引入可微AWGN信道和Rayleigh衰落信道，使模型能够在训练阶段学习对噪声和衰落更稳定的图像表示；在接收端通过转置卷积解码结构完成图像重建。系统同时实现JPEG基线链路、PSNR与SSIM评价指标、批量评估脚本和Streamlit可视化界面，支持图像上传、SNR调节、信道类型选择以及原图、DeepSC重构图和传统基线重构图的对比展示。实验以CIFAR-10作为训练数据，以Kodak图像集作为测试数据，在-5 dB至20 dB的多种信噪比条件下开展蒙特卡洛评估。结果表明，在AWGN信道下，64语义通道模型在-5 dB时达到21.90 dB PSNR和0.6183 SSIM，明显高于JPEG基线的11.43 dB和0.1099；在20 dB时达到40.02 dB PSNR和0.9935 SSIM。Rayleigh信道下，模型在-5 dB时仍达到22.46 dB PSNR和0.6451 SSIM，在20 dB时达到38.11 dB PSNR和0.9929 SSIM，说明所设计系统在强噪声和衰落环境中具有较好的鲁棒传输能力。研究结果表明，将深度语义表示学习与可微信道建模联合优化，能够提升图像无线传输的重建质量与结构保持能力，也为后续面向6G智能业务的图像语义通信系统设计提供了工程实现基础。",
+        "本文围绕基于深度语义通信的图像鲁棒传输系统设计与实现展开研究，面向传统图像传输方案在低信噪比、带宽受限和信道波动条件下重建质量下降的问题，设计并实现了一套集模型训练、信道仿真、基线对照、指标评估和图形化展示于一体的图像传输系统。系统采用端到端联合信源信道编码思想，以卷积神经网络（Convolutional Neural Network，CNN）为主体构建语义编码器和语义解码器，在编码端融合压缩激励（Squeeze-and-Excitation，SE）通道注意力与空间注意力机制，将输入图像映射为归一化语义特征；在传输过程中引入可微加性高斯白噪声（Additive White Gaussian Noise，AWGN）信道和瑞利（Rayleigh）衰落信道，使模型能够在训练阶段学习对噪声和衰落更稳定的图像表示；在接收端通过转置卷积解码结构完成图像重建。系统同时实现联合图像专家小组（Joint Photographic Experts Group，JPEG）基线链路、峰值信噪比（Peak Signal-to-Noise Ratio，PSNR）与结构相似性（Structural Similarity，SSIM）评价指标、批量评估脚本和Streamlit可视化界面，支持图像上传、信噪比（Signal-to-Noise Ratio，SNR）调节、信道类型选择以及原图、深度语义通信（Deep Semantic Communication，DeepSC）重构图和传统基线重构图的对比展示。实验以CIFAR-10作为训练数据，以Kodak图像集作为测试数据，在-5 dB至20 dB的多种信噪比条件下开展蒙特卡洛评估。结果表明，在AWGN信道下，64语义通道模型在-5 dB时达到21.90 dB PSNR和0.6183 SSIM，明显高于JPEG基线的11.43 dB和0.1099；在20 dB时达到40.02 dB PSNR和0.9935 SSIM。Rayleigh信道下，模型在-5 dB时仍达到22.46 dB PSNR和0.6451 SSIM，在20 dB时达到38.11 dB PSNR和0.9929 SSIM，说明所设计系统在强噪声和衰落环境中具有较好的鲁棒传输能力。研究结果表明，将深度语义表示学习与可微信道建模联合优化，能够提升图像无线传输的重建质量与结构保持能力，也为后续面向第六代移动通信（6th Generation，6G）智能业务的图像语义通信系统设计提供了工程实现基础。",
     )
     add_paragraph(doc, "关键词：语义通信；图像鲁棒传输；联合信源信道编码；信道建模；图像重建", first_line=False)
     add_heading(doc, "Abstract", 1)
     add_paragraph(
         doc,
-        "This thesis studies the design and implementation of a robust image transmission system based on deep semantic communication. To address the degradation of conventional image transmission schemes under low signal-to-noise ratio, limited bandwidth and fluctuating wireless channels, an integrated system is developed for model training, channel simulation, baseline comparison, performance evaluation and graphical demonstration. The system follows the principle of end-to-end joint source-channel coding. A convolutional semantic encoder and decoder are constructed with squeeze-and-excitation channel attention and spatial attention. The encoder maps input images into normalized semantic features, differentiable AWGN and Rayleigh channels are embedded into the transmission process, and the decoder reconstructs images from the disturbed semantic features. The implementation also includes a JPEG baseline, PSNR and SSIM metrics, batch evaluation scripts and a Streamlit-based GUI that supports image uploading, SNR adjustment, channel selection, and visual comparison among the original image, the DeepSC reconstruction and the conventional baseline. CIFAR-10 is used for training and the Kodak image set is used for evaluation. Monte Carlo experiments are conducted under SNR values from -5 dB to 20 dB. Experimental results show that, under the AWGN channel, the 64-channel semantic model achieves 21.90 dB PSNR and 0.6183 SSIM at -5 dB, significantly outperforming the JPEG baseline with 11.43 dB and 0.1099. At 20 dB, it reaches 40.02 dB PSNR and 0.9935 SSIM. Under the Rayleigh channel, the model still achieves 22.46 dB PSNR and 0.6451 SSIM at -5 dB, and 38.11 dB PSNR and 0.9929 SSIM at 20 dB. These results demonstrate that the proposed system provides robust image transmission capability under noisy and fading channels. The study confirms that jointly optimizing deep semantic representation and differentiable channel modeling can improve image reconstruction quality and structural preservation, providing a practical basis for future image semantic communication systems in 6G-oriented intelligent services.",
+        "This thesis studies the design and implementation of a robust image transmission system based on deep semantic communication. To address the degradation of conventional image transmission schemes under low signal-to-noise ratio, limited bandwidth and fluctuating wireless channels, an integrated system is developed for model training, channel simulation, baseline comparison, performance evaluation and graphical demonstration. The system follows the principle of end-to-end joint source-channel coding (JSCC). A convolutional semantic encoder and decoder are constructed with squeeze-and-excitation (SE) channel attention and spatial attention. The encoder maps input images into normalized semantic features, differentiable additive white Gaussian noise (AWGN) and Rayleigh channels are embedded into the transmission process, and the decoder reconstructs images from the disturbed semantic features. The implementation also includes a Joint Photographic Experts Group (JPEG) baseline, peak signal-to-noise ratio (PSNR) and structural similarity (SSIM) metrics, batch evaluation scripts and a Streamlit-based graphical user interface (GUI) that supports image uploading, signal-to-noise ratio (SNR) adjustment, channel selection, and visual comparison among the original image, the deep semantic communication (DeepSC) reconstruction and the conventional baseline. CIFAR-10 is used for training and the Kodak image set is used for evaluation. Monte Carlo experiments are conducted under SNR values from -5 dB to 20 dB. Experimental results show that, under the AWGN channel, the 64-channel semantic model achieves 21.90 dB PSNR and 0.6183 SSIM at -5 dB, significantly outperforming the JPEG baseline with 11.43 dB and 0.1099. At 20 dB, it reaches 40.02 dB PSNR and 0.9935 SSIM. Under the Rayleigh channel, the model still achieves 22.46 dB PSNR and 0.6451 SSIM at -5 dB, and 38.11 dB PSNR and 0.9929 SSIM at 20 dB. These results demonstrate that the proposed system provides robust image transmission capability under noisy and fading channels. The study confirms that jointly optimizing deep semantic representation and differentiable channel modeling can improve image reconstruction quality and structural preservation, providing a practical basis for future image semantic communication systems in 6G-oriented intelligent services.",
     )
     add_paragraph(doc, "Keywords: semantic communication; robust image transmission; joint source-channel coding; channel modeling; image reconstruction", first_line=False)
     doc.add_page_break()
@@ -279,8 +279,8 @@ def add_chapter_1(doc: Document) -> None:
     add_paragraph(doc, "在图像语义通信方向，国内研究已经开始关注深度模型结构、语义特征表达和图像重建质量。郭畅等对图像语义通信技术进行了系统综述，指出图像传输研究正在从像素压缩和比特恢复转向语义保真和任务可用性[4]。张振国等构建了基于深度学习的图像语义通信系统，验证了端到端联合优化的可行性[5]。江沸菠等提出面向6G的深度图像语义通信模型，推动了图像语义恢复从像素层重建向语义一致性优化发展[6]。相关研究表明，在图像无线传输中融合深度特征提取、注意力机制和信道适配机制，是提升复杂信道下传输质量的重要路径。")
     add_paragraph(doc, "除通用图像传输外，国内部分研究也开始面向低比特率图像编码、文本类屏幕内容图像传输、多任务图像语义传输和跨域鲁棒语义传输等更具体场景展开探索[7-11]。这些研究说明，语义通信的价值不仅在于提高传统PSNR或SSIM指标，还在于根据应用任务筛选和保留关键语义内容。对于本科毕业设计而言，若直接实现复杂多任务或跨域系统，训练成本和评价体系会显著增加，因此本文选择以图像重建为主要任务，以AWGN和Rayleigh信道为典型无线信道，以PSNR和SSIM作为可复现实验指标，在可控范围内验证深度语义通信的鲁棒传输能力。")
     add_heading(doc, "1.2.2 国外研究现状", 3)
-    add_paragraph(doc, "国外研究较早从深度联合信源信道编码角度研究无线图像传输。Bourtsoulatze等提出DeepJSCC方法，直接将图像映射为信道输入符号，并通过端到端训练实现图像重建[12]。该方法在低信噪比和带宽受限条件下相比传统分离式数字方案表现出更平滑的退化特性。Qin等总结了语义通信的基本原则与挑战[14]，Xie等提出DeepSC文本语义通信系统[13]，其端到端语义表达与信道适配思想对后续图像语义通信研究具有启发意义。")
-    add_paragraph(doc, "近年来，国外研究继续向鲁棒性、带宽自适应和复杂语义建模方向发展。DeepJSCC-l++、SwinJSCC和WITT等工作分别从带宽自适应、Swin Transformer和无线图像传输Transformer角度提升图像重建性能[18-20]。也有研究从鲁棒图像语义通信和语义通信综述角度讨论未知信道、未知数据和对抗扰动场景[21-22]。总体来看，国外研究在理论模型和先进网络结构方面推进较快，但对于本科毕业设计而言，构建可解释、可运行、可评估和可展示的完整系统同样具有重要价值。")
+    add_paragraph(doc, "国外研究较早从深度联合信源信道编码角度研究无线图像传输。Bourtsoulatze等提出深度联合信源信道编码（Deep Joint Source-Channel Coding，DeepJSCC）方法，直接将图像映射为信道输入符号，并通过端到端训练实现图像重建[12]。该方法在低信噪比和带宽受限条件下相比传统分离式数字方案表现出更平滑的退化特性。Qin等总结了语义通信的基本原则与挑战[14]，Xie等提出DeepSC文本语义通信系统[13]，其端到端语义表达与信道适配思想对后续图像语义通信研究具有启发意义。")
+    add_paragraph(doc, "近年来，国外研究继续向鲁棒性、带宽自适应和复杂语义建模方向发展。DeepJSCC-l++、以移位窗口（Shifted Window，Swin）Transformer为基础的SwinJSCC和无线图像传输Transformer（Wireless Image Transmission Transformer，WITT）等工作分别从带宽自适应、移位窗口Transformer和无线图像传输Transformer角度提升图像重建性能[18-20]。也有研究从鲁棒图像语义通信和语义通信综述角度讨论未知信道、未知数据和对抗扰动场景[21-22]。总体来看，国外研究在理论模型和先进网络结构方面推进较快，但对于本科毕业设计而言，构建可解释、可运行、可评估和可展示的完整系统同样具有重要价值。")
     add_paragraph(doc, "已有研究为本文提供了三点启发。第一，图像语义传输不宜仅复用传统压缩后再加纠错编码的分层思路，而应让模型直接学习图像到信道符号的映射。第二，信道扰动需要进入训练闭环，否则模型只能学习普通自编码器式压缩重建，难以在低SNR和衰落条件下保持稳定。第三，系统评价不能只报告单一SNR或单张图像结果，而应在多个SNR点、多个图像样本和随机信道重复采样下统计平均性能。本文系统设计和实验方案均围绕这三点展开。")
     add_heading(doc, "1.3 研究内容与论文结构", 2)
     add_paragraph(doc, "本文主要研究内容包括四个方面。第一，梳理深度语义通信、联合信源信道编码、无线信道建模和图像质量评价指标，为系统设计提供理论基础。第二，设计卷积与注意力融合的图像语义通信模型，构建语义编码器、可微信道层和语义解码器，实现端到端图像鲁棒传输。第三，实现传统JPEG基线、训练脚本、评估脚本、单图推理和Streamlit图形界面，形成较完整的软件系统。第四，在CIFAR-10和Kodak数据集上开展实验，比较DeepSC模型与传统基线在AWGN和Rayleigh信道下的PSNR、SSIM和可视化效果。")
@@ -320,7 +320,7 @@ def add_chapter_2(doc: Document) -> None:
     add_paragraph(doc, "Rayleigh信道进一步考虑无线多径传播导致的幅度衰落，若衰落系数为h，则可表示为：")
     add_paragraph(doc, "y = h s + n", first_line=False, align=WD_ALIGN_PARAGRAPH.CENTER)
     add_paragraph(doc, "系统在实现中对语义特征进行平均功率归一化，并根据信噪比计算噪声功率。信噪比SNR越高，信号功率相对噪声越强，图像重建通常越容易。")
-    add_paragraph(doc, "评价指标方面，本文主要采用MSE、PSNR和SSIM。MSE反映像素误差，PSNR衡量整体重建失真程度，SSIM从亮度、对比度和结构角度评价图像相似性。现有图像语义通信和深度JSCC研究通常也使用PSNR、SSIM以及不同SNR下的性能曲线进行比较[12,18-20]。三者结合能够同时反映客观误差、图像清晰度和结构保持能力。")
+    add_paragraph(doc, "评价指标方面，本文主要采用均方误差（Mean Squared Error，MSE）、PSNR和SSIM。MSE反映像素误差，PSNR衡量整体重建失真程度，SSIM从亮度、对比度和结构角度评价图像相似性。现有图像语义通信和深度JSCC研究通常也使用PSNR、SSIM以及不同SNR下的性能曲线进行比较[12,18-20]。三者结合能够同时反映客观误差、图像清晰度和结构保持能力。")
     add_paragraph(doc, "在AWGN信道中，噪声服从高斯分布且与信号相互独立，常用于模拟热噪声等随机扰动。Rayleigh信道则用于描述不存在明显直达径时的多径衰落现象，接收信号不仅包含加性噪声，还受到随机幅度缩放影响。本文实现的Rayleigh信道采用样本级平坦衰落，并在接收端使用理想均衡进行幅度恢复。该假设简化了真实无线传播过程，但能够在本科设计范围内体现衰落对图像语义特征传输的影响。")
     add_paragraph(doc, "PSNR和SSIM各有侧重。PSNR由均方误差推导得到，对像素级误差敏感，适合衡量整体失真；SSIM强调局部均值、方差和协方差，对结构相似性更敏感，更接近人眼对图像结构的感知。本文在训练阶段使用MSE与SSIM混合损失，在测试阶段同时报告PSNR和SSIM，原因在于单一指标无法充分说明语义传输系统的恢复质量。例如，在低SNR下某些重建图像可能PSNR不高，但仍保留主要轮廓和空间结构，此时SSIM能够提供补充判断。")
     add_table(
@@ -341,7 +341,7 @@ def add_chapter_3(doc: Document) -> None:
     add_heading(doc, "第3章 图像鲁棒传输系统需求分析与总体设计", 1)
     add_heading(doc, "3.1 系统需求分析", 2)
     add_paragraph(doc, "根据任务书和开题报告要求，本系统需要实现面向图像任务的端到端语义编码传输，能够在AWGN和Rayleigh信道下完成图像重建，并与传统编码方案进行性能对比。同时，系统需要提供可视化软件，支持图像上传、SNR调节、实时重建展示和PSNR/SSIM自动计算。")
-    add_paragraph(doc, "系统需求可以分为功能性需求和非功能性需求。功能性需求包括模型训练、模型评估、单图推理、可视化演示、传统基线对照、实验结果保存和参数配置覆盖等；非功能性需求包括可复现性、模块可维护性、运行安全性、实验产物可追溯性和用户交互易用性。由于毕业设计需要同时支撑论文实验和答辩展示，系统不能只追求模型指标，还应保证不同模块之间的数据格式一致，命令行和GUI调用同一套推理逻辑，避免出现离线实验与界面展示结果不一致的问题。")
+    add_paragraph(doc, "系统需求可以分为功能性需求和非功能性需求。功能性需求包括模型训练、模型评估、单图推理、可视化演示、传统基线对照、实验结果保存和参数配置覆盖等；非功能性需求包括可复现性、模块可维护性、运行安全性、实验产物可追溯性和用户交互易用性。由于毕业设计需要同时支撑论文实验和答辩展示，系统不能只追求模型指标，还应保证不同模块之间的数据格式一致，命令行和图形用户界面（Graphical User Interface，GUI）调用同一套推理逻辑，避免出现离线实验与界面展示结果不一致的问题。")
     add_table(
         doc,
         "表3.1 系统核心需求分析表",
@@ -361,7 +361,7 @@ def add_chapter_3(doc: Document) -> None:
     add_paragraph(doc, "系统采用配置驱动方式组织实验。训练配置文件指定随机种子、设备选择、数据集路径、图像尺寸、语义通道数、基础通道数、信道类型、训练SNR、训练轮数、批量大小、学习率、权重衰减和损失权重等参数。评估配置文件指定Kodak数据集路径、测试图像尺寸、评估SNR、JPEG质量和蒙特卡洛采样次数。命令行参数可以覆盖配置文件中的关键字段，从而在不修改源码的情况下完成不同信道、不同语义通道和不同checkpoint的实验。")
     add_heading(doc, "3.3 系统业务流程与模块划分", 2)
     add_paragraph(doc, "系统业务流程包括训练流程和测试展示流程。训练流程首先读取CIFAR-10或图像文件夹数据，然后按配置构建模型和信道，在每个批次中随机选择训练SNR，完成前向传播、损失计算和参数更新，最后保存best_model.pth、last_model.pth、history.csv、history.json和loss_curve.png。测试流程加载训练好的checkpoint，在Kodak图像集或用户上传图片上执行DeepSC重建和JPEG基线重建，计算PSNR、SSIM并输出曲线或界面结果。")
-    add_paragraph(doc, "从数据流角度看，训练阶段输入为图像张量，输出为模型参数和训练日志；评估阶段输入为checkpoint、测试图像和信道参数，输出为metrics.json和指标曲线；推理阶段输入为单张用户图像，输出为DeepSC重构图、JPEG基线图和指标字典；GUI阶段则在推理阶段基础上增加参数控件和图像展示。这样的分层设计能够将模型计算逻辑集中在核心模块中，减少重复代码。当前inference.py提供run_inference函数，CLI和Streamlit界面都复用该函数，因此单图推理指标和界面指标具有一致来源。")
+    add_paragraph(doc, "从数据流角度看，训练阶段输入为图像张量，输出为模型参数和训练日志；评估阶段输入为checkpoint、测试图像和信道参数，输出为metrics.json和指标曲线；推理阶段输入为单张用户图像，输出为DeepSC重构图、JPEG基线图和指标字典；GUI阶段则在推理阶段基础上增加参数控件和图像展示。这样的分层设计能够将模型计算逻辑集中在核心模块中，减少重复代码。当前inference.py提供run_inference函数，命令行界面（Command Line Interface，CLI）和Streamlit界面都复用该函数，因此单图推理指标和界面指标具有一致来源。")
     add_table(
         doc,
         "表3.2 系统代码模块划分",
@@ -383,8 +383,8 @@ def add_chapter_4(doc: Document) -> None:
     add_heading(doc, "第4章 系统关键模块设计与实现", 1)
     add_heading(doc, "4.1 深度语义通信模型设计", 2)
     add_paragraph(doc, "本文实现的DeepSC图像模型采用紧凑型卷积注意力结构，由SemanticEncoder、可微信道层和SemanticDecoder组成。编码器首先通过ConvBlock提取低层视觉特征，然后经过两次stride=2下采样，将图像空间尺寸压缩为原来的四分之一。第一阶段下采样后引入SEBlock进行通道注意力加权，第二阶段下采样后进一步结合SEBlock和SpatialAttention，以增强重要语义通道和关键空间区域的表达能力。最后通过1x1卷积投影到指定数量的语义通道，并进行平均功率归一化。")
-    add_paragraph(doc, "解码器首先将接收到的语义特征扩展到较高维通道，再通过SEBlock进行特征重标定，随后利用两级转置卷积逐步恢复空间分辨率，最后通过卷积和Sigmoid输出范围为0到1的RGB图像。若输出尺寸与输入尺寸存在差异，系统会通过双线性插值进行对齐。该设计兼顾了模型复杂度和重建能力，适合本科毕业设计中的实验复现与系统演示。")
-    add_paragraph(doc, "ConvBlock采用3x3卷积、BatchNorm和SiLU激活函数组合。3x3卷积能够在较小参数量下提取局部纹理和边缘特征，BatchNorm有助于稳定训练，SiLU激活函数在深度网络中通常比简单ReLU具有更平滑的梯度特性。SEBlock通过全局平均池化获得通道级统计信息，再利用1x1卷积生成通道权重，使模型能够强化对重建更有价值的特征通道。SpatialAttention则利用通道维平均值和最大值构建空间注意力图，从空间位置上强调更重要的区域。")
+    add_paragraph(doc, "解码器首先将接收到的语义特征扩展到较高维通道，再通过SEBlock进行特征重标定，随后利用两级转置卷积逐步恢复空间分辨率，最后通过卷积和Sigmoid输出范围为0到1的红绿蓝（Red Green Blue，RGB）图像。若输出尺寸与输入尺寸存在差异，系统会通过双线性插值进行对齐。该设计兼顾了模型复杂度和重建能力，适合本科毕业设计中的实验复现与系统演示。")
+    add_paragraph(doc, "ConvBlock采用3x3卷积、批归一化（Batch Normalization，BN）和Sigmoid线性单元（Sigmoid Linear Unit，SiLU）激活函数组合。3x3卷积能够在较小参数量下提取局部纹理和边缘特征，BatchNorm有助于稳定训练，SiLU激活函数在深度网络中通常比简单修正线性单元（Rectified Linear Unit，ReLU）具有更平滑的梯度特性。SEBlock通过全局平均池化获得通道级统计信息，再利用1x1卷积生成通道权重，使模型能够强化对重建更有价值的特征通道。SpatialAttention则利用通道维平均值和最大值构建空间注意力图，从空间位置上强调更重要的区域。")
     add_paragraph(doc, "语义投影层的输出通道数是本文实验中的关键变量。若输入图像尺寸为H乘W，编码器两次下采样后空间尺寸约为H/4乘W/4，语义符号数量为C_s乘H/4乘W/4，其中C_s为语义通道数。C_s越小，传输符号越少，语义瓶颈越强；C_s越大，语义表示越充分，但传输开销也越高。本文在训练配置中允许semantic_channels写为列表，使一次训练命令可以分别生成16、32和64通道模型，便于后续比较压缩率与重建质量。")
     add_table(
         doc,
@@ -404,10 +404,10 @@ def add_chapter_4(doc: Document) -> None:
     add_paragraph(doc, "功率归一化是信道建模中的重要步骤。若语义编码器输出特征幅度没有约束，模型可能通过无限增大发送特征幅度来抵消噪声，从而得到不符合通信系统功率约束的结果。本文在编码器输出端对每个样本的语义张量进行平均功率归一化，使其单位平均功率传输，再根据信道SNR计算噪声方差。这样既保持了模型可训练性，也使不同语义通道数之间的实验对比更公平。")
     add_paragraph(doc, "训练损失采用MSE与SSIM的混合形式：")
     add_paragraph(doc, "L = (1 - alpha) MSE(x, x_hat) + alpha (1 - SSIM(x, x_hat))", first_line=False, align=WD_ALIGN_PARAGRAPH.CENTER)
-    add_paragraph(doc, "其中alpha为SSIM权重，当前配置中取0.2。MSE约束像素级误差，SSIM约束结构相似性，二者结合能够在清晰度和结构保持之间取得较好的平衡。优化器采用AdamW，学习率为0.001，权重衰减为0.0001。")
+    add_paragraph(doc, "其中alpha为SSIM权重，当前配置中取0.2。MSE约束像素级误差，SSIM约束结构相似性，二者结合能够在清晰度和结构保持之间取得较好的平衡。优化器采用自适应动量估计（Adaptive Moment Estimation，Adam）的带权重衰减变体（Adam with Weight Decay，AdamW），学习率为0.001，权重衰减为0.0001。")
     add_heading(doc, "4.3 基线对照、评估与可视化实现", 2)
-    add_paragraph(doc, "为了验证DeepSC模型的有效性，系统实现了JPEG基线模块。该模块首先使用PIL在内存中完成JPEG编码和解码，然后根据所选信道向图像张量加入噪声或衰落类退化。虽然该基线不是完整的传统通信链路，但能够作为轻量级对照，帮助观察传统压缩图像在噪声信道下的失真情况。")
-    add_paragraph(doc, "JPEG基线的设计遵循轻量、可运行和可解释原则。系统没有引入复杂的BPG编码、信道编码、调制和软解调流程，而是用JPEG压缩后的图像作为传统压缩表示，再叠加与信道相关的视觉退化。该设计的优势是部署简单、运行速度快、便于在GUI中实时展示；不足是不能代表完整传统通信系统的最优性能。因此，本文在实验结论中仅将其作为工程基线和视觉对照，而不声称其覆盖所有传统方案。")
+    add_paragraph(doc, "为了验证DeepSC模型的有效性，系统实现了JPEG基线模块。该模块首先使用Python图像库（Python Imaging Library，PIL）在内存中完成JPEG编码和解码，然后根据所选信道向图像张量加入噪声或衰落类退化。虽然该基线不是完整的传统通信链路，但能够作为轻量级对照，帮助观察传统压缩图像在噪声信道下的失真情况。")
+    add_paragraph(doc, "JPEG基线的设计遵循轻量、可运行和可解释原则。系统没有引入复杂的更好的便携式图形（Better Portable Graphics，BPG）编码、信道编码、调制和软解调流程，而是用JPEG压缩后的图像作为传统压缩表示，再叠加与信道相关的视觉退化。该设计的优势是部署简单、运行速度快、便于在GUI中实时展示；不足是不能代表完整传统通信系统的最优性能。因此，本文在实验结论中仅将其作为工程基线和视觉对照，而不声称其覆盖所有传统方案。")
     add_table(
         doc,
         "表4.2 DeepSC模型与传统基线模块对比",
@@ -425,7 +425,7 @@ def add_chapter_4(doc: Document) -> None:
     add_paragraph(doc, "在最新项目实现中，单图推理逻辑被拆分到inference.py和infer.py两个文件中。inference.py提供run_inference函数，负责接收模型、输入图像、信道配置和JPEG质量，输出DeepSC重构图、JPEG基线图、两组指标和两组延迟。infer.py提供命令行入口，支持指定输入图片、输出路径、checkpoint路径、信道类型、SNR、图像尺寸、语义通道数、基础通道数、JPEG质量和设备类型。该设计使用户无需启动GUI即可对任意单张图像进行复现实验，也便于在论文附录和答辩演示中给出明确运行命令。")
     add_paragraph(doc, "训练和评估脚本还提供交互式参数配置能力。用户既可以通过YAML文件固定实验配置，也可以通过命令行参数覆盖关键字段，还可以在需要时使用interactive_cli模块进行交互式输入。这种设计降低了重复修改配置文件的成本，尤其适合比较不同语义通道数、不同信道类型和不同SNR策略的实验。训练脚本会将实际使用的配置保存到输出目录，保证后续能够追溯每个checkpoint对应的训练条件。")
     add_paragraph(doc, "考虑到PyTorch checkpoint加载可能存在安全风险，utils.py中实现了基于weights_only的安全加载逻辑，并对checkpoint顶层键进行验证。GUI在允许用户手动输入本地checkpoint路径时，也给出安全提示，建议仅加载可信本地环境中的模型文件。此外，GUI会优先从受信任输出目录中搜索项目生成的.pth文件，并根据checkpoint中保存的配置自动恢复语义通道数和基础通道数，减少因模型结构不匹配导致的加载错误。")
-    add_paragraph(doc, "训练吞吐benchmark模块用于评估训练速度和系统运行开销。该模块使用随机张量构造小规模训练循环，不依赖真实数据集，适合比较AMP、DataLoader参数、模型规模和语义通道数对训练速度的影响。虽然本文论文实验重点是重建质量和鲁棒性，但训练吞吐测试为后续优化运行效率、迁移到GPU或边缘设备提供了基础工具。")
+    add_paragraph(doc, "训练吞吐benchmark模块用于评估训练速度和系统运行开销。该模块使用随机张量构造小规模训练循环，不依赖真实数据集，适合比较自动混合精度（Automatic Mixed Precision，AMP）、DataLoader参数、模型规模和语义通道数对训练速度的影响。虽然本文论文实验重点是重建质量和鲁棒性，但训练吞吐测试为后续优化运行效率、迁移到GPU或边缘设备提供了基础工具。")
 
 
 def add_chapter_5(doc: Document) -> None:
@@ -535,7 +535,7 @@ def add_chapter_5(doc: Document) -> None:
         ],
     )
     add_paragraph(doc, "综合各组实验，本文系统的主要优势在于低SNR和衰落信道下具有更强鲁棒性。由于DeepSC模型在训练阶段直接经历信道扰动，编码器学到的语义特征不只是普通压缩表示，而是对噪声和衰落更稳定的传输表示。JPEG基线在低SNR下指标明显下降，说明传统压缩后再叠加视觉退化的方案难以在强扰动下保持结构信息。DeepSC模型在多个SNR点上保持较高SSIM，说明其恢复的不只是像素近似值，还包含较稳定的空间结构。")
-    add_paragraph(doc, "实验误差和局限主要来自五个方面。第一，训练集为CIFAR-10，图像尺寸为32x32，而评估集为256x256 Kodak图像，虽然模型支持尺寸泛化，但训练与测试分辨率存在差异。第二，当前JPEG基线使用固定质量参数和轻量信道类退化，不是严格码率匹配的完整数字通信链路。第三，Rayleigh信道采用平坦衰落和理想均衡，尚未模拟真实系统中的信道估计误差、时变多径和频率选择性衰落。第四，评估指标以PSNR和SSIM为主，尚未加入LPIPS、FID或下游视觉任务指标。第五，所有checkpoint按训练损失选择，未单独设置验证集进行模型选择。上述因素不会否定本文系统的工程实现和趋势结论，但会影响结果外推到真实无线系统时的严格性。")
+    add_paragraph(doc, "实验误差和局限主要来自五个方面。第一，训练集为CIFAR-10，图像尺寸为32x32，而评估集为256x256 Kodak图像，虽然模型支持尺寸泛化，但训练与测试分辨率存在差异。第二，当前JPEG基线使用固定质量参数和轻量信道类退化，不是严格码率匹配的完整数字通信链路。第三，Rayleigh信道采用平坦衰落和理想均衡，尚未模拟真实系统中的信道估计误差、时变多径和频率选择性衰落。第四，评估指标以PSNR和SSIM为主，尚未加入学习感知图像块相似度（Learned Perceptual Image Patch Similarity，LPIPS）、Fréchet初始距离（Fréchet Inception Distance，FID）或下游视觉任务指标。第五，所有checkpoint按训练损失选择，未单独设置验证集进行模型选择。上述因素不会否定本文系统的工程实现和趋势结论，但会影响结果外推到真实无线系统时的严格性。")
 
 
 def add_chapter_6(doc: Document) -> None:
@@ -545,7 +545,7 @@ def add_chapter_6(doc: Document) -> None:
     add_paragraph(doc, "从工程成果看，本文完成了从算法模型到系统应用的完整闭环。训练部分能够根据配置文件批量训练不同语义通道数模型，并保存checkpoint、训练历史、损失曲线和summary文件；评估部分能够在Kodak图像集上执行多SNR、多蒙特卡洛采样测试，并自动生成指标表和曲线；推理部分能够对单张图片输出DeepSC重构图、JPEG基线图和指标；GUI部分能够提供图像上传、checkpoint选择、信道切换和实时指标展示。上述模块共同构成了一个可复现、可扩展和可演示的图像语义通信系统。")
     add_paragraph(doc, "从实验结论看，本文验证了三个主要现象。第一，在AWGN和Rayleigh信道的低SNR区域，DeepSC模型相比JPEG基线具有明显优势，说明端到端语义特征学习能够提升抗噪能力。第二，模型在Rayleigh衰落信道下仍能保持较高SSIM，说明所学语义表示对乘性衰落和加性噪声具有一定稳定性。第三，语义通道数对压缩率和重建质量具有直接影响，16通道适合压缩优先，64通道适合质量优先，32通道则提供折中方案。")
     add_heading(doc, "6.2 系统不足分析", 2)
-    add_paragraph(doc, "本文系统仍存在一些不足。第一，当前模型主要采用轻量卷积注意力结构，虽然便于训练和演示，但与Swin Transformer、WITT等更复杂结构相比，语义建模能力仍有提升空间。第二，JPEG基线是轻量级传统对照，并不等价于完整的BPG、LDPC、调制解调和信道编码链路，因此传统通信方案对比还可以进一步完善。第三，当前实验主要关注PSNR和SSIM，尚未引入LPIPS、FID或下游视觉任务指标，语义层面的评价仍不够充分。第四，训练数据主要采用CIFAR-10，图像尺寸较小，虽然评估使用Kodak数据集，但模型在更大规模自然图像和真实无线环境中的泛化能力仍需进一步验证。")
+    add_paragraph(doc, "本文系统仍存在一些不足。第一，当前模型主要采用轻量卷积注意力结构，虽然便于训练和演示，但与Swin Transformer、WITT等更复杂结构相比，语义建模能力仍有提升空间。第二，JPEG基线是轻量级传统对照，并不等价于完整的BPG、低密度奇偶校验（Low-Density Parity-Check，LDPC）、调制解调和信道编码链路，因此传统通信方案对比还可以进一步完善。第三，当前实验主要关注PSNR和SSIM，尚未引入LPIPS、FID或下游视觉任务指标，语义层面的评价仍不够充分。第四，训练数据主要采用CIFAR-10，图像尺寸较小，虽然评估使用Kodak数据集，但模型在更大规模自然图像和真实无线环境中的泛化能力仍需进一步验证。")
     add_paragraph(doc, "此外，当前系统中的语义特征仍以连续浮点张量形式传输，没有进一步考虑实际通信系统中的量化、调制、信道编码和硬件约束。语义瓶颈压缩比只是从张量形状角度估算的符号规模比例，不能直接代表真实链路中的比特率和频谱效率。若要将该系统进一步推向工程应用，还需要研究语义特征量化、端到端可训练调制、信道编码融合、模型压缩和低时延推理部署等问题。")
     add_heading(doc, "6.3 后续改进与研究展望", 2)
     add_paragraph(doc, "后续研究可以从四个方向展开。第一，在模型结构上引入多尺度Transformer、Swin Transformer或混合CNN-Transformer结构，提高长距离依赖建模和复杂纹理恢复能力。第二，在信道模型上加入Rician衰落、多径时变信道、量化噪声和实际调制误差，使系统更接近真实无线传输环境。第三，在评价体系上增加感知质量指标和下游任务指标，从语义可用性角度评价图像传输效果。第四，在系统实现上进一步优化推理速度和部署方式，支持Web服务、移动端或边缘设备演示，使图像语义通信系统更贴近实际应用。总体而言，深度语义通信为复杂信道下图像鲁棒传输提供了新的技术路径，本文实现的系统为后续研究和工程扩展奠定了基础。")
