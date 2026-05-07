@@ -115,6 +115,19 @@ python -m deepsc_image.evaluate `
 | `psnr_vs_snr.svg` / `ssim_vs_snr.svg` | DeepSC、JPEG、BPG 的论文用矢量指标曲线图 |
 | `psnr_vs_snr.png` / `ssim_vs_snr.png` | DeepSC、JPEG、BPG 的位图预览曲线图 |
 
+不同语义通道数模型的曲线对比：
+
+```powershell
+python -m deepsc_image.compare_semantic_channels `
+  --metrics `
+    outputs/eval_kodak/<sem_16_eval_dir>/metrics.json `
+    outputs/eval_kodak/<sem_32_eval_dir>/metrics.json `
+    outputs/eval_kodak/<sem_64_eval_dir>/metrics.json `
+  --output-dir outputs/semantic_channel_compare
+```
+
+该命令会生成 `semantic_channels_psnr_vs_snr.svg`、`semantic_channels_ssim_vs_snr.svg` 和对应 PNG/CSV，用于论文中比较 `semantic_channels=16/32/64` 等模型差异。
+
 ### 单图推理
 
 ```powershell

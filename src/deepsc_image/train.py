@@ -325,8 +325,8 @@ def _draw_loss_curve(output_base: Path, history: list[dict[str, Any]], metadata:
         ax.legend(loc="best", fontsize=9)
 
     ax.set_title(_format_loss_curve_title(metadata), fontsize=12)
-    ax.set_xlabel("epoch", fontsize=11)
-    ax.set_ylabel("train_loss", fontsize=11)
+    ax.set_xlabel("Epoch", fontsize=11)
+    ax.set_ylabel("Training Loss", fontsize=11)
     ax.grid(True, alpha=0.3)
 
     fig.tight_layout()

@@ -83,6 +83,14 @@ def test_eval_curve_artifacts_created_and_non_empty(tmp_path: Path) -> None:
     assert ssim_curve.stat().st_size > 0
     assert psnr_curve_svg.stat().st_size > 0
     assert ssim_curve_svg.stat().st_size > 0
+    psnr_svg = psnr_curve_svg.read_text(encoding="utf-8")
+    ssim_svg = ssim_curve_svg.read_text(encoding="utf-8")
+    assert "SNR (dB)" in psnr_svg
+    assert "PSNR (dB)" in psnr_svg
+    assert "SNR (dB)" in ssim_svg
+    assert "SSIM" in ssim_svg
+    assert "snr_db" not in psnr_svg
+    assert "psnr_db" not in psnr_svg
 
 
 def test_eval_curve_title_includes_key_parameters() -> None:

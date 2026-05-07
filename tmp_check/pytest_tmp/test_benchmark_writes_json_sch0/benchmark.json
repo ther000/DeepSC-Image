@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-07T16:32:04.635334+00:00",
+  "timestamp": "2026-05-07T17:00:41.093413+00:00",
   "torch_version": "2.10.0+cpu",
   "config_path": "configs/train_cifar10_awgn.yaml",
   "device": "cpu",
@@ -29,18 +29,18 @@
   "max_batches": 1,
   "runs": [
     {
-      "epoch_seconds": 0.20395270001608878,
-      "samples_per_second": 313.79824829458676,
+      "epoch_seconds": 0.22298709998722188,
+      "samples_per_second": 287.0121186547001,
       "processed_samples": 64,
       "batches": 1,
       "last_loss": 0.23151682317256927
     }
   ],
   "timing": {
-    "epoch_seconds_median": 0.20395270001608878,
-    "epoch_seconds_mean": 0.20395270001608878,
-    "samples_per_second_median": 313.79824829458676,
-    "samples_per_second_mean": 313.79824829458676
+    "epoch_seconds_median": 0.22298709998722188,
+    "epoch_seconds_mean": 0.22298709998722188,
+    "samples_per_second_median": 287.0121186547001,
+    "samples_per_second_mean": 287.0121186547001
   },
   "cuda_memory": null
 }

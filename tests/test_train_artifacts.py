@@ -57,6 +57,10 @@ def test_history_artifacts_can_refresh_without_summary(tmp_path: Path) -> None:
     assert len((tmp_path / "history.csv").read_text(encoding="utf-8").splitlines()) == 3
     assert (tmp_path / "loss_curve.png").stat().st_size > 0
     assert (tmp_path / "loss_curve.svg").stat().st_size > 0
+    loss_svg = (tmp_path / "loss_curve.svg").read_text(encoding="utf-8")
+    assert "Epoch" in loss_svg
+    assert "Training Loss" in loss_svg
+    assert "train_loss" not in loss_svg
     assert not (tmp_path / "summary.json").exists()
 
 

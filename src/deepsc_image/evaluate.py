@@ -144,7 +144,7 @@ def _draw_comparison_curve(
         ax.legend(loc="best", fontsize=10)
 
     ax.set_title(title, fontsize=12)
-    ax.set_xlabel("snr_db", fontsize=11)
+    ax.set_xlabel("SNR (dB)", fontsize=11)
     ax.set_ylabel(y_label, fontsize=11)
     ax.grid(True, alpha=0.3)
 
@@ -184,7 +184,7 @@ def _write_curve_artifacts(output_dir: Path, rows: list[dict[str, Any]]) -> None
         output_dir / "psnr_vs_snr",
         rows,
         title=_format_curve_title("PSNR", rows),
-        y_label="psnr_db",
+        y_label="PSNR (dB)",
         deepsc_key="deepsc_psnr",
         baseline_keys=psnr_keys,
     )
@@ -192,7 +192,7 @@ def _write_curve_artifacts(output_dir: Path, rows: list[dict[str, Any]]) -> None
         output_dir / "ssim_vs_snr",
         rows,
         title=_format_curve_title("SSIM", rows),
-        y_label="ssim",
+        y_label="SSIM",
         deepsc_key="deepsc_ssim",
         baseline_keys=ssim_keys,
     )
