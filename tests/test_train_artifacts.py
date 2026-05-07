@@ -42,6 +42,7 @@ def test_history_artifacts_can_refresh_without_summary(tmp_path: Path) -> None:
     assert (tmp_path / "history.csv").is_file()
     assert (tmp_path / "history.json").is_file()
     assert (tmp_path / "loss_curve.png").is_file()
+    assert (tmp_path / "loss_curve.svg").is_file()
     assert not (tmp_path / "summary.json").exists()
     assert json.loads((tmp_path / "history.json").read_text(encoding="utf-8")) == history_one
 
@@ -55,6 +56,7 @@ def test_history_artifacts_can_refresh_without_summary(tmp_path: Path) -> None:
     assert json.loads((tmp_path / "history.json").read_text(encoding="utf-8")) == history_two
     assert len((tmp_path / "history.csv").read_text(encoding="utf-8").splitlines()) == 3
     assert (tmp_path / "loss_curve.png").stat().st_size > 0
+    assert (tmp_path / "loss_curve.svg").stat().st_size > 0
     assert not (tmp_path / "summary.json").exists()
 
 
@@ -85,4 +87,27 @@ def test_training_artifact_writers(tmp_path: Path) -> None:
     assert json.loads((tmp_path / "history.json").read_text(encoding="utf-8")) == history
     assert json.loads((tmp_path / "summary.json").read_text(encoding="utf-8"))["best_train_loss"] == 0.2
     assert (tmp_path / "loss_curve.png").is_file()
+    assert (tmp_path / "loss_curve.svg").is_file()
+
+
+def test_loss_curve_title_includes_training_parameters() -> None:
+    title = train._format_loss_curve_title(
+        {
+            "semantic_channels": 32,
+            "channel_type": "awgn",
+            "snr_values": [-5.0, 0.0, 5.0],
+            "image_size": 256,
+            "epochs": 100,
+            "batch_size": 64,
+            "learning_rate": 0.001,
+        }
+    )
+
+    assert "semantic_channels=32" in title
+    assert "channel=AWGN" in title
+    assert "train_snr=-5/0/5 dB" in title
+    assert "lr=0.001" in title
+    assert "image=256x256" not in title
+    assert "epochs=100" not in title
+    assert "batch_size=64" not in title
 

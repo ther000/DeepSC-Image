@@ -218,8 +218,8 @@ def apply_eval_interactive_config(cfg: dict[str, Any], input_func: InputFunc = i
     set_nested(cfg, ["channel", "type"], prompt_choice("Channel", ("none", "awgn", "rayleigh"), str(get_nested(cfg, ["channel", "type"], "awgn")), input_func, output_func))
     set_nested(cfg, ["channel", "snr_db"], prompt_float_list("Evaluation SNR dB values", get_nested(cfg, ["channel", "snr_db"], [10.0]), input_func, output_func))
     set_nested(cfg, ["baseline", "codec"], prompt_choice("Baseline codec", ("jpeg", "bpg"), str(get_nested(cfg, ["baseline", "codec"], "jpeg")), input_func, output_func))
-    set_nested(cfg, ["baseline", "jpeg_quality"], prompt_int("JPEG quality", int(get_nested(cfg, ["baseline", "jpeg_quality"], 35)), input_func, output_func))
-    set_nested(cfg, ["baseline", "bpg_qp"], prompt_int("BPG QP", int(get_nested(cfg, ["baseline", "bpg_qp"], 29)), input_func, output_func))
+    set_nested(cfg, ["baseline", "jpeg_quality"], prompt_int("JPEG quality", int(get_nested(cfg, ["baseline", "jpeg_quality"], 95)), input_func, output_func))
+    set_nested(cfg, ["baseline", "bpg_qp"], prompt_int("BPG QP", int(get_nested(cfg, ["baseline", "bpg_qp"], 0)), input_func, output_func))
     set_nested(cfg, ["evaluation", "monte_carlo_samples"], prompt_int("Monte Carlo samples", int(get_nested(cfg, ["evaluation", "monte_carlo_samples"], 1)), input_func, output_func))
     set_nested(cfg, ["output_dir"], prompt_string("Output directory", str(get_nested(cfg, ["output_dir"], "outputs/eval")), input_func))
     return cfg

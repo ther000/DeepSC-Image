@@ -283,29 +283,69 @@ def _write_json(path: Path, data: Any) -> None:
         handle.write("\n")
 
 
-def _draw_loss_curve(path: Path, history: list[dict[str, Any]]) -> None:
+def _format_snr_values(values: list[float]) -> str:
+    return "/".join(f"{value:g}" for value in values)
+
+
+def _format_loss_curve_title(metadata: dict[str, Any] | None = None) -> str:
+    if not metadata:
+        return "Training Loss"
+
+    parts = []
+    semantic_channels = metadata.get("semantic_channels")
+    channel_type = metadata.get("channel_type")
+    snr_values = metadata.get("snr_values")
+    learning_rate = metadata.get("learning_rate")
+
+    if semantic_channels is not None:
+        parts.append(f"semantic_channels={semantic_channels}")
+    if channel_type is not None:
+        parts.append(f"channel={str(channel_type).upper()}")
+    if snr_values:
+        parts.append(f"train_snr={_format_snr_values([float(v) for v in snr_values])} dB")
+    if learning_rate is not None:
+        parts.append(f"lr={float(learning_rate):g}")
+
+    if not parts:
+        return "Training Loss"
+    return "Training Loss\n" + ", ".join(parts)
+
+
+def _draw_loss_curve(output_base: Path, history: list[dict[str, Any]], metadata: dict[str, Any] | None = None) -> None:
     fig, ax = plt.subplots(figsize=(8, 4.8))
 
     if history:
         losses = [float(row["train_loss"]) for row in history]
         epochs = [int(row["epoch"]) for row in history]
         ax.plot(epochs, losses, color="blue", marker="o", linewidth=2, markersize=4)
+        best_index = min(range(len(losses)), key=losses.__getitem__)
+        best_epoch = epochs[best_index]
+        best_loss = losses[best_index]
+        ax.scatter([best_epoch], [best_loss], color="red", marker="*", s=110, zorder=3, label=f"best epoch={best_epoch}")
+        ax.legend(loc="best", fontsize=9)
 
-    ax.set_title("Training loss", fontsize=12)
+    ax.set_title(_format_loss_curve_title(metadata), fontsize=12)
     ax.set_xlabel("epoch", fontsize=11)
     ax.set_ylabel("train_loss", fontsize=11)
     ax.grid(True, alpha=0.3)
 
     fig.tight_layout()
-    fig.savefig(path, dpi=100, bbox_inches="tight")
+    fig.savefig(output_base.with_suffix(".svg"), bbox_inches="tight")
+    fig.savefig(output_base.with_suffix(".png"), dpi=160, bbox_inches="tight")
     plt.close(fig)
 
 
-def _write_history_artifacts(output_dir: Path, history: list[dict[str, Any]], *, include_plot: bool = True) -> None:
+def _write_history_artifacts(
+    output_dir: Path,
+    history: list[dict[str, Any]],
+    *,
+    include_plot: bool = True,
+    plot_metadata: dict[str, Any] | None = None,
+) -> None:
     _write_history_csv(output_dir / "history.csv", history)
     _write_json(output_dir / "history.json", history)
     if include_plot:
-        _draw_loss_curve(output_dir / "loss_curve.png", history)
+        _draw_loss_curve(output_dir / "loss_curve", history, plot_metadata)
 
 
 def _write_epoch_artifacts(
@@ -314,16 +354,23 @@ def _write_epoch_artifacts(
     *,
     write_history: bool,
     write_plot: bool,
+    plot_metadata: dict[str, Any] | None = None,
 ) -> None:
     if write_history:
         _write_history_csv(output_dir / "history.csv", history)
         _write_json(output_dir / "history.json", history)
     if write_plot:
-        _draw_loss_curve(output_dir / "loss_curve.png", history)
+        _draw_loss_curve(output_dir / "loss_curve", history, plot_metadata)
 
 
-def _write_training_artifacts(output_dir: Path, history: list[dict[str, Any]], summary: dict[str, Any]) -> None:
-    _write_history_artifacts(output_dir, history)
+def _write_training_artifacts(
+    output_dir: Path,
+    history: list[dict[str, Any]],
+    summary: dict[str, Any],
+    *,
+    plot_metadata: dict[str, Any] | None = None,
+) -> None:
+    _write_history_artifacts(output_dir, history, plot_metadata=plot_metadata)
     _write_json(output_dir / "summary.json", summary)
 
 
@@ -393,6 +440,15 @@ def _run_experiment(
         f"input_shape={bandwidth['input_shape']} semantic_shape={bandwidth['semantic_shape']} "
         f"bandwidth_ratio={bandwidth['bandwidth_ratio']:.4f} compression_ratio={bandwidth['compression_ratio']:.4f}"
     )
+    loss_plot_metadata = {
+        "semantic_channels": semantic_channels,
+        "channel_type": channel_type,
+        "snr_values": snr_values,
+        "image_size": image_size,
+        "epochs": epoch_count,
+        "batch_size": int(train_cfg.get("batch_size", 64)),
+        "learning_rate": float(train_cfg.get("learning_rate", 1e-3)),
+    }
     history: list[dict[str, Any]] = []
     best_train_loss: float | None = None
     best_epoch: int | None = None
@@ -436,6 +492,7 @@ def _run_experiment(
             history,
             write_history=_should_write_epoch(epoch, epoch_count, int(artifact_cfg.get("history_every_epochs", 1))),
             write_plot=_should_write_epoch(epoch, epoch_count, int(artifact_cfg.get("plot_every_epochs", 1))),
+            plot_metadata=loss_plot_metadata,
         )
         checkpoint_extra = {"epoch": epoch, "config": experiment_cfg, "bandwidth_estimate": bandwidth}
         should_save_last = _should_write_epoch(epoch, epoch_count, int(artifact_cfg.get("checkpoint_every_epochs", 1)))
@@ -470,7 +527,7 @@ def _run_experiment(
         "output_dir": str(output_dir),
         "bandwidth_estimate": bandwidth,
     }
-    _write_training_artifacts(output_dir, history, summary)
+    _write_training_artifacts(output_dir, history, summary, plot_metadata=loss_plot_metadata)
 
 
 def run_training(cfg: dict[str, Any], epochs: int | None = None) -> None:

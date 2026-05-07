@@ -84,8 +84,8 @@ def main() -> None:
             index=list(VALID_BASELINE_CODECS).index(default_codec),
             format_func=lambda value: value.upper(),
         )
-        jpeg_quality = int(baseline_cfg.get("jpeg_quality", 35))
-        bpg_qp = int(baseline_cfg.get("bpg_qp", 29))
+        jpeg_quality = int(baseline_cfg.get("jpeg_quality", 95))
+        bpg_qp = int(baseline_cfg.get("bpg_qp", 0))
         if baseline_codec == "jpeg":
             jpeg_quality = st.slider("JPEG 基线质量", min_value=5, max_value=95, value=jpeg_quality)
         else:

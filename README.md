@@ -101,10 +101,19 @@ python -m deepsc_image.evaluate `
   --checkpoint path/to/best_model.pth `
   --channel awgn `
   --snr-db -5 0 5 10 15 20 `
+  --baseline-codec jpeg bpg `
   --monte-carlo-samples 5
 ```
 
-评估结果会保存到 `outputs/eval_kodak/`，主要产物为 `metrics.json` 和指标曲线图。
+评估结果会保存到 `outputs/eval_kodak/`，主要产物为：
+
+| 文件 | 用途 |
+| --- | --- |
+| `metrics.json` | 完整原始指标，适合后续脚本处理 |
+| `metrics.csv` | 论文表格和 Excel/WPS 作图数据源 |
+| `thesis_table.md` | 可直接复制到论文初稿的 Markdown 指标表 |
+| `psnr_vs_snr.svg` / `ssim_vs_snr.svg` | DeepSC、JPEG、BPG 的论文用矢量指标曲线图 |
+| `psnr_vs_snr.png` / `ssim_vs_snr.png` | DeepSC、JPEG、BPG 的位图预览曲线图 |
 
 ### 单图推理
 
@@ -187,7 +196,8 @@ outputs/train_cifar10_awgn/ts_05041200__ch_awgn__snr_0_5_10_15_20__sem_16__base_
 | `last_model.pth` | 最后一轮 checkpoint |
 | `config.yaml` | 本次实际使用配置 |
 | `history.csv` / `history.json` | 每轮 loss、PSNR、SSIM |
-| `loss_curve.png` | 训练曲线 |
+| `loss_curve.svg` | 论文用矢量训练 loss 曲线 |
+| `loss_curve.png` | 位图预览训练 loss 曲线 |
 | `summary.json` | 最佳轮次、输出路径和带宽估计 |
 
 当前模型两次 stride=2 下采样，带宽估算为：

@@ -145,6 +145,7 @@ def test_artifact_default_history_artifacts(tmp_path: Path) -> None:
     assert (tmp_path / "history.csv").is_file()
     assert (tmp_path / "history.json").is_file()
     assert (tmp_path / "loss_curve.png").is_file()
+    assert (tmp_path / "loss_curve.svg").is_file()
 
 
 def test_amp_dtype_rejects_unknown_value() -> None:
@@ -200,6 +201,7 @@ def test_epoch_artifacts_can_write_plot_without_history(tmp_path: Path) -> None:
     assert not (tmp_path / "history.csv").exists()
     assert not (tmp_path / "history.json").exists()
     assert (tmp_path / "loss_curve.png").is_file()
+    assert (tmp_path / "loss_curve.svg").is_file()
 
 
 def test_checkpoint_payload_copies_model_state() -> None:

@@ -14,6 +14,13 @@ def _synthetic_rows() -> list[dict[str, float | str | int]]:
             "deepsc_ssim": 0.52,
             "jpeg_psnr": 16.1,
             "jpeg_ssim": 0.44,
+            "baseline_codecs": ["jpeg", "bpg"],
+            "semantic_channels": 32,
+            "image_size": 256,
+            "jpeg_quality": 95,
+            "bpg_qp": 0,
+            "bpg_psnr": 15.8,
+            "bpg_ssim": 0.42,
             "samples": 2,
             "monte_carlo_samples": 1,
             "repetitions": 2,
@@ -26,6 +33,13 @@ def _synthetic_rows() -> list[dict[str, float | str | int]]:
             "deepsc_ssim": 0.61,
             "jpeg_psnr": 18.5,
             "jpeg_ssim": 0.54,
+            "baseline_codecs": ["jpeg", "bpg"],
+            "semantic_channels": 32,
+            "image_size": 256,
+            "jpeg_quality": 95,
+            "bpg_qp": 0,
+            "bpg_psnr": 18.1,
+            "bpg_ssim": 0.52,
             "samples": 2,
             "monte_carlo_samples": 1,
             "repetitions": 2,
@@ -38,6 +52,13 @@ def _synthetic_rows() -> list[dict[str, float | str | int]]:
             "deepsc_ssim": 0.82,
             "jpeg_psnr": 22.0,
             "jpeg_ssim": 0.77,
+            "baseline_codecs": ["jpeg", "bpg"],
+            "semantic_channels": 32,
+            "image_size": 256,
+            "jpeg_quality": 95,
+            "bpg_qp": 0,
+            "bpg_psnr": 21.7,
+            "bpg_ssim": 0.75,
             "samples": 2,
             "monte_carlo_samples": 1,
             "repetitions": 2,
@@ -51,11 +72,41 @@ def test_eval_curve_artifacts_created_and_non_empty(tmp_path: Path) -> None:
 
     psnr_curve = tmp_path / "psnr_vs_snr.png"
     ssim_curve = tmp_path / "ssim_vs_snr.png"
+    psnr_curve_svg = tmp_path / "psnr_vs_snr.svg"
+    ssim_curve_svg = tmp_path / "ssim_vs_snr.svg"
 
     assert psnr_curve.is_file()
     assert ssim_curve.is_file()
+    assert psnr_curve_svg.is_file()
+    assert ssim_curve_svg.is_file()
     assert psnr_curve.stat().st_size > 0
     assert ssim_curve.stat().st_size > 0
+    assert psnr_curve_svg.stat().st_size > 0
+    assert ssim_curve_svg.stat().st_size > 0
+
+
+def test_eval_curve_title_includes_key_parameters() -> None:
+    title = evaluate._format_curve_title("PSNR", _synthetic_rows())
+
+    assert "semantic_channels=32" in title
+    assert "JPEG Q=95" in title
+    assert "BPG QP=0" in title
+    assert "channel=AWGN" not in title
+    assert "baseline=JPEG/BPG" not in title
+    assert "image=256x256" not in title
+    assert "MC=1" not in title
+
+
+def test_eval_table_artifacts_created(tmp_path: Path) -> None:
+    evaluate._write_table_artifacts(tmp_path, _synthetic_rows())
+
+    metrics_csv = tmp_path / "metrics.csv"
+    thesis_table = tmp_path / "thesis_table.md"
+
+    assert metrics_csv.is_file()
+    assert thesis_table.is_file()
+    assert "snr_db" in metrics_csv.read_text(encoding="utf-8")
+    assert "DeepSC PSNR" in thesis_table.read_text(encoding="utf-8")
 
 
 def test_eval_plot_curves_enabled_defaults_to_true() -> None:

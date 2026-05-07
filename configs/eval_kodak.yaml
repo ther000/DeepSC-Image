@@ -12,8 +12,9 @@ channel:
   snr_db: [-5, 0, 5, 10, 15, 20]
 baseline:
   codec: jpeg
-  jpeg_quality: 90
-  bpg_qp: 29
+  codecs: [jpeg, bpg]
+  jpeg_quality: 95
+  bpg_qp: 0
 evaluation:
   # Repeated stochastic channel draws per image/SNR for Monte Carlo averaging.
   monte_carlo_samples: 5

@@ -1,0 +1,2 @@
+epoch,train_loss,psnr,ssim,batches
+1,0.25,12.5,0.4,2

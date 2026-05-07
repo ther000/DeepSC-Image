@@ -1,0 +1,46 @@
+{
+  "timestamp": "2026-05-07T16:32:04.735129+00:00",
+  "torch_version": "2.10.0+cpu",
+  "config_path": "E:\\Administrator\\Downloads\\Code\\DeepSC-Image\\tmp_check\\pytest_tmp\\test_benchmark_preserves_yaml_0\\config.yaml",
+  "device": "cpu",
+  "cuda_available": false,
+  "amp_requested": true,
+  "amp_enabled": false,
+  "amp": {
+    "enabled": true,
+    "dtype": "float16",
+    "requested": true,
+    "effective": false,
+    "device_type": "cpu"
+  },
+  "dataloader": {
+    "num_workers": 0,
+    "pin_memory": false,
+    "persistent_workers": false,
+    "prefetch_factor": null
+  },
+  "model": {
+    "semantic_channels": 16,
+    "base_channels": 2
+  },
+  "warmup": 0,
+  "repeat": 1,
+  "epochs": 1,
+  "max_batches": 1,
+  "runs": [
+    {
+      "epoch_seconds": 0.049794299993664026,
+      "samples_per_second": 40.16523980163364,
+      "processed_samples": 2,
+      "batches": 1,
+      "last_loss": 0.23061031103134155
+    }
+  ],
+  "timing": {
+    "epoch_seconds_median": 0.049794299993664026,
+    "epoch_seconds_mean": 0.049794299993664026,
+    "samples_per_second_median": 40.16523980163364,
+    "samples_per_second_mean": 40.16523980163364
+  },
+  "cuda_memory": null
+}

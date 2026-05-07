@@ -14,5 +14,5 @@ ui:
   trusted_checkpoint_dir: "outputs"
 baseline:
   codec: jpeg
-  jpeg_quality: 35
-  bpg_qp: 29
+  jpeg_quality: 95
+  bpg_qp: 0

@@ -1,0 +1,9 @@
+[
+  {
+    "epoch": 1,
+    "train_loss": 0.25,
+    "psnr": 12.5,
+    "ssim": 0.4,
+    "batches": 2
+  }
+]

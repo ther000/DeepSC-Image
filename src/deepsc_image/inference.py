@@ -28,9 +28,9 @@ def run_inference(
     model: DeepSCImageModel,
     image: torch.Tensor,
     channel: ChannelConfig,
-    jpeg_quality: int = 35,
+    jpeg_quality: int = 95,
     baseline_codec: str = "jpeg",
-    bpg_qp: int = 29,
+    bpg_qp: int = 0,
     device: torch.device | None = None,
 ) -> InferenceResult:
     target_device = device or next(model.parameters()).device

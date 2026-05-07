@@ -20,7 +20,7 @@ from .utils import pil_to_tensor, tensor_to_pil
 VALID_BASELINE_CODECS = ("jpeg", "bpg")
 
 
-def jpeg_roundtrip(image: Image.Image, quality: int = 35) -> Image.Image:
+def jpeg_roundtrip(image: Image.Image, quality: int = 95) -> Image.Image:
     buffer = BytesIO()
     image.convert("RGB").save(buffer, format="JPEG", quality=int(quality), optimize=False)
     buffer.seek(0)
@@ -70,7 +70,7 @@ def _bpg_temp_root() -> Path:
     raise RuntimeError("Unable to create a temporary directory for BPG baseline: " + "; ".join(errors))
 
 
-def bpg_roundtrip(image: Image.Image, qp: int = 29) -> Image.Image:
+def bpg_roundtrip(image: Image.Image, qp: int = 0) -> Image.Image:
     """Run BPG encode/decode through bundled command line tools."""
 
     encoder = _bpg_tool("bpgenc.exe")
@@ -146,7 +146,7 @@ def _roundtrip_baseline_tensor(
     return degraded.clamp(0, 1)
 
 
-def jpeg_baseline_tensor(tensor: torch.Tensor, config: ChannelConfig, quality: int = 35) -> torch.Tensor:
+def jpeg_baseline_tensor(tensor: torch.Tensor, config: ChannelConfig, quality: int = 95) -> torch.Tensor:
     """Run an in-memory JPEG encode/decode then add channel-like degradation."""
 
     return _roundtrip_baseline_tensor(
@@ -157,7 +157,7 @@ def jpeg_baseline_tensor(tensor: torch.Tensor, config: ChannelConfig, quality: i
     )
 
 
-def bpg_baseline_tensor(tensor: torch.Tensor, config: ChannelConfig, qp: int = 29) -> torch.Tensor:
+def bpg_baseline_tensor(tensor: torch.Tensor, config: ChannelConfig, qp: int = 0) -> torch.Tensor:
     """Run a BPG encode/decode then add channel-like degradation."""
 
     return _roundtrip_baseline_tensor(
@@ -173,8 +173,8 @@ def baseline_tensor(
     config: ChannelConfig,
     *,
     codec: str = "jpeg",
-    jpeg_quality: int = 35,
-    bpg_qp: int = 29,
+    jpeg_quality: int = 95,
+    bpg_qp: int = 0,
 ) -> torch.Tensor:
     codec_name = codec.lower().strip()
     if codec_name == "jpeg":

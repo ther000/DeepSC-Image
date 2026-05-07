@@ -27,8 +27,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--semantic-channels", type=int, default=32)
     parser.add_argument("--base-channels", type=int, default=32)
     parser.add_argument("--baseline-codec", default="jpeg", choices=VALID_BASELINE_CODECS)
-    parser.add_argument("--jpeg-quality", type=int, default=35)
-    parser.add_argument("--bpg-qp", type=int, default=29)
+    parser.add_argument("--jpeg-quality", type=int, default=95)
+    parser.add_argument("--bpg-qp", type=int, default=0)
     parser.add_argument("--device", default="auto")
     return parser.parse_args()
 

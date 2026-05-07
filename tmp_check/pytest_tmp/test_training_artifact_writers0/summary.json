@@ -1,0 +1,14 @@
+{
+  "best_epoch": 2,
+  "best_train_loss": 0.2,
+  "last_epoch": 2,
+  "last_train_loss": 0.2,
+  "checkpoint_filenames": {
+    "best": "best_model.pth",
+    "last": "last_model.pth"
+  },
+  "output_dir": "E:\\Administrator\\Downloads\\Code\\DeepSC-Image\\tmp_check\\pytest_tmp\\test_training_artifact_writers0",
+  "bandwidth_estimate": {
+    "bandwidth_ratio": 0.1
+  }
+}

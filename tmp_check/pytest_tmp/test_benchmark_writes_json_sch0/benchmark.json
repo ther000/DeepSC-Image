@@ -1,0 +1,46 @@
+{
+  "timestamp": "2026-05-07T16:32:04.635334+00:00",
+  "torch_version": "2.10.0+cpu",
+  "config_path": "configs/train_cifar10_awgn.yaml",
+  "device": "cpu",
+  "cuda_available": false,
+  "amp_requested": false,
+  "amp_enabled": false,
+  "amp": {
+    "enabled": false,
+    "dtype": "float16",
+    "requested": false,
+    "effective": false,
+    "device_type": "cpu"
+  },
+  "dataloader": {
+    "num_workers": 0,
+    "pin_memory": false,
+    "persistent_workers": false,
+    "prefetch_factor": null
+  },
+  "model": {
+    "semantic_channels": 16,
+    "base_channels": 32
+  },
+  "warmup": 0,
+  "repeat": 1,
+  "epochs": 1,
+  "max_batches": 1,
+  "runs": [
+    {
+      "epoch_seconds": 0.20395270001608878,
+      "samples_per_second": 313.79824829458676,
+      "processed_samples": 64,
+      "batches": 1,
+      "last_loss": 0.23151682317256927
+    }
+  ],
+  "timing": {
+    "epoch_seconds_median": 0.20395270001608878,
+    "epoch_seconds_mean": 0.20395270001608878,
+    "samples_per_second_median": 313.79824829458676,
+    "samples_per_second_mean": 313.79824829458676
+  },
+  "cuda_memory": null
+}

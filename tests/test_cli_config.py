@@ -35,5 +35,6 @@ def test_evaluate_cli_overrides_nested_config() -> None:
     assert cfg["model"]["semantic_channels"] == 64
     assert cfg["channel"] == {"type": "rayleigh", "snr_db": [-5.0, 0.0, 5.0]}
     assert cfg["baseline"]["codec"] == "bpg"
+    assert cfg["baseline"]["codecs"] == ["bpg"]
     assert cfg["baseline"]["bpg_qp"] == 31
     assert cfg["evaluation"]["monte_carlo_samples"] == 2
