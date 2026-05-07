@@ -7,7 +7,7 @@ from dataclasses import dataclass
 
 import torch
 
-from .baseline import jpeg_baseline_tensor
+from .baseline import baseline_tensor
 from .channels import ChannelConfig
 from .metrics import tensor_metrics
 from .model import DeepSCImageModel
@@ -21,6 +21,7 @@ class InferenceResult:
     baseline_metrics: dict[str, float]
     latency_ms: float
     baseline_latency_ms: float
+    baseline_codec: str
 
 
 def run_inference(
@@ -28,6 +29,8 @@ def run_inference(
     image: torch.Tensor,
     channel: ChannelConfig,
     jpeg_quality: int = 35,
+    baseline_codec: str = "jpeg",
+    bpg_qp: int = 29,
     device: torch.device | None = None,
 ) -> InferenceResult:
     target_device = device or next(model.parameters()).device
@@ -39,7 +42,13 @@ def run_inference(
     latency_ms = (time.perf_counter() - start) * 1000.0
 
     start_baseline = time.perf_counter()
-    baseline = jpeg_baseline_tensor(image, channel, quality=jpeg_quality).clamp(0, 1)
+    baseline = baseline_tensor(
+        image,
+        channel,
+        codec=baseline_codec,
+        jpeg_quality=jpeg_quality,
+        bpg_qp=bpg_qp,
+    ).clamp(0, 1)
     baseline_latency_ms = (time.perf_counter() - start_baseline) * 1000.0
 
     return InferenceResult(
@@ -49,4 +58,5 @@ def run_inference(
         baseline_metrics=tensor_metrics(image.detach().cpu(), baseline.detach().cpu()),
         latency_ms=latency_ms,
         baseline_latency_ms=baseline_latency_ms,
+        baseline_codec=baseline_codec,
     )

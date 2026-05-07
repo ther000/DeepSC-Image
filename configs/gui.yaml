@@ -13,4 +13,6 @@ ui:
   max_image_pixels: 4194304  # 2048x2048
   trusted_checkpoint_dir: "outputs"
 baseline:
+  codec: jpeg
   jpeg_quality: 35
+  bpg_qp: 29

@@ -16,6 +16,7 @@ def test_run_inference_returns_latency() -> None:
 
     assert hasattr(result, "latency_ms")
     assert hasattr(result, "baseline_latency_ms")
+    assert result.baseline_codec == "jpeg"
     assert isinstance(result.latency_ms, float)
     assert isinstance(result.baseline_latency_ms, float)
     assert result.latency_ms >= 0.0

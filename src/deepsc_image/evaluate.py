@@ -14,7 +14,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from .baseline import jpeg_baseline_tensor
+from .baseline import VALID_BASELINE_CODECS, baseline_tensor
 from .channels import ChannelConfig
 from .data import build_dataset, unwrap_batch
 from .metrics import tensor_metrics
@@ -36,7 +36,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--base-channels", type=int, default=None)
     parser.add_argument("--channel", choices=("none", "awgn", "rayleigh"), default=None)
     parser.add_argument("--snr-db", type=float, nargs="+", default=None, help="One or more evaluation SNR values")
+    parser.add_argument("--baseline-codec", choices=VALID_BASELINE_CODECS, default=None)
     parser.add_argument("--jpeg-quality", type=int, default=None)
+    parser.add_argument("--bpg-qp", type=int, default=None)
     parser.add_argument("--monte-carlo-samples", type=int, default=None)
     parser.add_argument("--output-dir", default=None)
     return parser.parse_args(argv)
@@ -62,8 +64,12 @@ def build_config_from_args(args: argparse.Namespace) -> dict[str, Any]:
         set_nested(cfg, ["channel", "type"], args.channel)
     if args.snr_db is not None:
         set_nested(cfg, ["channel", "snr_db"], list(args.snr_db))
+    if args.baseline_codec is not None:
+        set_nested(cfg, ["baseline", "codec"], args.baseline_codec)
     if args.jpeg_quality is not None:
         set_nested(cfg, ["baseline", "jpeg_quality"], args.jpeg_quality)
+    if args.bpg_qp is not None:
+        set_nested(cfg, ["baseline", "bpg_qp"], args.bpg_qp)
     if args.monte_carlo_samples is not None:
         set_nested(cfg, ["evaluation", "monte_carlo_samples"], args.monte_carlo_samples)
     if args.output_dir is not None:
@@ -108,7 +114,9 @@ def _draw_comparison_curve(
     title: str,
     y_label: str,
     deepsc_key: str,
-    jpeg_key: str,
+    baseline_key: str,
+    legacy_jpeg_key: str,
+    baseline_label: str,
 ) -> None:
     fig, ax = plt.subplots(figsize=(8, 4.8))
 
@@ -116,10 +124,10 @@ def _draw_comparison_curve(
         sorted_rows = sorted(rows, key=lambda row: float(row["snr_db"]))
         snr_values = [float(row["snr_db"]) for row in sorted_rows]
         deepsc_values = [float(row[deepsc_key]) for row in sorted_rows]
-        jpeg_values = [float(row[jpeg_key]) for row in sorted_rows]
+        baseline_values = [float(row.get(baseline_key, row[legacy_jpeg_key])) for row in sorted_rows]
 
         ax.plot(snr_values, deepsc_values, color="blue", marker="o", linewidth=2, markersize=4, label="DeepSC")
-        ax.plot(snr_values, jpeg_values, color="red", marker="s", linewidth=2, markersize=4, label="JPEG baseline")
+        ax.plot(snr_values, baseline_values, color="red", marker="s", linewidth=2, markersize=4, label=baseline_label)
         ax.legend(loc="best", fontsize=10)
 
     ax.set_title(title, fontsize=12)
@@ -133,21 +141,27 @@ def _draw_comparison_curve(
 
 
 def _write_curve_artifacts(output_dir: Path, rows: list[dict[str, Any]]) -> None:
+    codec = str(rows[0].get("baseline_codec", "jpeg")).upper() if rows else "BASELINE"
+    baseline_label = f"{codec} baseline"
     _draw_comparison_curve(
         output_dir / "psnr_vs_snr.png",
         rows,
-        title="PSNR vs SNR (DeepSC vs JPEG)",
+        title=f"PSNR vs SNR (DeepSC vs {codec})",
         y_label="psnr_db",
         deepsc_key="deepsc_psnr",
-        jpeg_key="jpeg_psnr",
+        baseline_key="baseline_psnr",
+        legacy_jpeg_key="jpeg_psnr",
+        baseline_label=baseline_label,
     )
     _draw_comparison_curve(
         output_dir / "ssim_vs_snr.png",
         rows,
-        title="SSIM vs SNR (DeepSC vs JPEG)",
+        title=f"SSIM vs SNR (DeepSC vs {codec})",
         y_label="ssim",
         deepsc_key="deepsc_ssim",
-        jpeg_key="jpeg_ssim",
+        baseline_key="baseline_ssim",
+        legacy_jpeg_key="jpeg_ssim",
+        baseline_label=baseline_label,
     )
 
 
@@ -173,7 +187,10 @@ def run_evaluation(cfg: dict[str, Any], checkpoint: str | None = None) -> list[d
     monte_carlo_samples = int(eval_cfg.get("monte_carlo_samples", 1))
     if monte_carlo_samples <= 0:
         raise ValueError("evaluation.monte_carlo_samples must be a positive integer")
-    jpeg_quality = int(cfg.get("baseline", {}).get("jpeg_quality", 35))
+    baseline_cfg = cfg.get("baseline", {})
+    baseline_codec = str(baseline_cfg.get("codec", "jpeg"))
+    jpeg_quality = int(baseline_cfg.get("jpeg_quality", 35))
+    bpg_qp = int(baseline_cfg.get("bpg_qp", 29))
     bandwidth = estimate_semantic_bandwidth(semantic_channels, input_shape=_image_shape(cfg.get("dataset", {})))
     results = []
     with torch.no_grad():
@@ -186,7 +203,13 @@ def run_evaluation(cfg: dict[str, Any], checkpoint: str | None = None) -> list[d
                 images = unwrap_batch(batch).to(device)
                 for _ in range(monte_carlo_samples):
                     reconstruction = model(images, channel=channel).clamp(0, 1)
-                    baseline = jpeg_baseline_tensor(images, channel, quality=jpeg_quality)
+                    baseline = baseline_tensor(
+                        images,
+                        channel,
+                        codec=baseline_codec,
+                        jpeg_quality=jpeg_quality,
+                        bpg_qp=bpg_qp,
+                    )
                     deep_metrics = tensor_metrics(images.cpu(), reconstruction.cpu())
                     base_metrics = tensor_metrics(images.cpu(), baseline.cpu())
                     deep_psnr += deep_metrics["psnr"]
@@ -204,8 +227,11 @@ def run_evaluation(cfg: dict[str, Any], checkpoint: str | None = None) -> list[d
                 "channel": channel_type,
                 "deepsc_psnr": deep_psnr / repetitions,
                 "deepsc_ssim": deep_ssim / repetitions,
-                "jpeg_psnr": base_psnr / repetitions,
-                "jpeg_ssim": base_ssim / repetitions,
+                "baseline_codec": baseline_codec,
+                "baseline_psnr": base_psnr / repetitions,
+                "baseline_ssim": base_ssim / repetitions,
+                f"{baseline_codec}_psnr": base_psnr / repetitions,
+                f"{baseline_codec}_ssim": base_ssim / repetitions,
                 "samples": count,
                 "monte_carlo_samples": monte_carlo_samples,
                 "repetitions": repetitions,

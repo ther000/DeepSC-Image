@@ -1,6 +1,6 @@
 # DeepSC-Image
 
-基于 PyTorch 的图像语义通信实验工程，用于实现“语义编码器 -> 可微信道 -> 语义解码器”的端到端图像鲁棒传输流程。项目包含训练、评估、单图推理、Streamlit 可视化界面和传统 JPEG 基线，适合课程设计、毕业设计和小规模实验复现。
+基于 PyTorch 的图像语义通信实验工程，用于实现“语义编码器 -> 可微信道 -> 语义解码器”的端到端图像鲁棒传输流程。项目包含训练、评估、单图推理、Streamlit 可视化界面和传统 JPEG/BPG 压缩基线，适合课程设计、毕业设计和小规模实验复现。
 
 > 仓库不默认提供训练好的 checkpoint。未加载 checkpoint 时，推理和 GUI 会使用随机初始化模型，只能验证流程是否可运行，不能代表真实性能。
 
@@ -12,9 +12,9 @@
 | 信道模型 | `none`、`awgn`、`rayleigh`，支持不同 SNR 条件 |
 | 训练目标 | `MSE + (1 - SSIM)` 混合损失 |
 | 评估指标 | PSNR、SSIM、推理延迟 |
-| 传统基线 | PIL 内存 JPEG 编解码，并加入信道类退化 |
+| 传统基线 | JPEG 或 BPG 压缩编解码，并加入信道类退化 |
 | 实验入口 | 训练、评估、单图推理、训练吞吐 benchmark、CPU smoke test |
-| 可视化 | Streamlit 上传图片，对比原图、DeepSC 重构和 JPEG 基线 |
+| 可视化 | Streamlit 上传图片，对比原图、DeepSC 重构和 JPEG/BPG 基线 |
 
 ## 目录结构
 
@@ -47,7 +47,7 @@ pip install -e .
 python -m deepsc_image.smoke_test
 ```
 
-看到 `SMOKE_TEST_OK` 表示模型、信道、指标、JPEG 基线和最小训练步骤可正常运行。
+看到 `SMOKE_TEST_OK` 表示模型、信道、指标、默认 JPEG 基线和最小训练步骤可正常运行。
 
 ## 数据准备
 
@@ -118,7 +118,7 @@ python -m deepsc_image.infer `
   --baseline-output outputs/infer/jpeg.png
 ```
 
-命令会输出 DeepSC 与 JPEG 基线的 PSNR、SSIM 和延迟，并保存两张重构图。
+命令会输出 DeepSC 与所选 JPEG/BPG 基线的 PSNR、SSIM 和延迟，并保存两张重构图。
 
 ### GUI
 
@@ -126,7 +126,7 @@ python -m deepsc_image.infer `
 streamlit run src/deepsc_image/app.py
 ```
 
-界面支持上传图片、选择 checkpoint、切换信道、调整 SNR，并展示原图、DeepSC 重构图、JPEG 基线图及指标。
+界面支持上传图片、选择 checkpoint、切换信道、调整 SNR、选择 JPEG/BPG 基线，并展示原图、DeepSC 重构图、传统基线图及指标。
 
 ### 训练吞吐 Benchmark
 
@@ -166,6 +166,9 @@ python -m deepsc_image.benchmark_training `
 | `channel.snr_db` | 评估 SNR 列表 |
 | `training.epochs` | 训练轮数 |
 | `training.batch_size` | Batch 大小 |
+| `training.amp.enabled` | 是否启用 CUDA AMP 混合精度训练 |
+| `training.dataloader.num_workers` | DataLoader 进程数 |
+| `training.artifacts.*_every_epochs` | history、loss 曲线和 checkpoint 等产物的刷新间隔 |
 | `training.output_dir` | 训练输出目录 |
 
 ## 训练产物
@@ -202,7 +205,7 @@ compression_ratio = 1 / bandwidth_ratio
 | `channels.py` | AWGN、Rayleigh 和无退化信道 |
 | `losses.py` | MSE + SSIM 混合损失 |
 | `metrics.py` | PSNR、SSIM |
-| `baseline.py` | JPEG 基线 |
+| `baseline.py` | JPEG/BPG 压缩基线 |
 | `data.py` | CIFAR-10 和图片文件夹数据集 |
 | `train.py` | 训练入口 |
 | `evaluate.py` | 批量评估入口 |
@@ -214,7 +217,7 @@ compression_ratio = 1 / bandwidth_ratio
 ## 注意事项
 
 - 未加载 checkpoint 的结果只适合功能验证，不适合论文或答辩中的性能结论。
-- 若要比较 DeepSC 与 JPEG，请保证数据集、图像尺寸、信道、SNR 和 checkpoint 条件一致。
-- 当前 JPEG 基线是轻量实现，不等价于完整传统通信链路或 BPG 基线。
+- 若要比较 DeepSC 与 JPEG/BPG，请保证数据集、图像尺寸、信道、SNR、baseline codec 和 checkpoint 条件一致。
+- 当前 JPEG/BPG 基线是压缩编解码加信道类退化的轻量实现，不等价于完整传统通信链路。
 - `outputs/`、大数据集、checkpoint 等文件通常不应提交到 Git。
 - 本项目的语义特征传输不等价于密码学安全，正式系统仍需结合加密和认证机制。

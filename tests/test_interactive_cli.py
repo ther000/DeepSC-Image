@@ -107,15 +107,16 @@ def test_eval_interactive_updates_selected_values() -> None:
         "model": {"semantic_channels": 32, "base_channels": 32},
         "checkpoint": None,
         "channel": {"type": "awgn", "snr_db": [0, 10]},
-        "baseline": {"jpeg_quality": 35},
+        "baseline": {"codec": "jpeg", "jpeg_quality": 35, "bpg_qp": 29},
         "evaluation": {"monte_carlo_samples": 1},
         "output_dir": "outputs/eval",
     }
-    values = ["cuda", "", "", "", "64", "", "ckpt.pth", "rayleigh", "-5,0,5", "", "3", "outputs/new_eval"]
+    values = ["cuda", "", "", "", "64", "", "ckpt.pth", "rayleigh", "-5,0,5", "bpg", "", "31", "3", "outputs/new_eval"]
     interactive_cli.apply_eval_interactive_config(cfg, feed(values), lambda _: None)
     assert cfg["device"] == "cuda"
     assert cfg["model"]["semantic_channels"] == 64
     assert cfg["checkpoint"] == "ckpt.pth"
     assert cfg["channel"] == {"type": "rayleigh", "snr_db": [-5.0, 0.0, 5.0]}
+    assert cfg["baseline"] == {"codec": "bpg", "jpeg_quality": 35, "bpg_qp": 31}
     assert cfg["evaluation"]["monte_carlo_samples"] == 3
     assert cfg["output_dir"] == "outputs/new_eval"

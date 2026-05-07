@@ -8,6 +8,7 @@ from typing import Mapping
 import streamlit as st
 from PIL import Image, UnidentifiedImageError
 
+from deepsc_image.baseline import VALID_BASELINE_CODECS
 from deepsc_image.channels import ChannelConfig
 from deepsc_image.inference import run_inference
 from deepsc_image.model import DeepSCImageModel
@@ -60,7 +61,7 @@ def main() -> None:
     cfg_path = Path("configs/gui.yaml")
     cfg = load_yaml(cfg_path) if cfg_path.exists() else {}
     st.title("基于 DeepSC 的图像鲁棒传输系统")
-    st.caption("支持 AWGN/Rayleigh 信道、SNR -5~20 dB、DeepSC 与 JPEG 传统基线对比。")
+    st.caption("支持 AWGN/Rayleigh 信道、SNR -5~20 dB、DeepSC 与 JPEG/BPG 传统基线对比。")
     with st.sidebar:
         st.header("参数设置")
         uploaded = st.file_uploader("上传本地图像", type=["png", "jpg", "jpeg", "bmp", "webp"])
@@ -73,7 +74,22 @@ def main() -> None:
         channel_type = st.selectbox("信道类型", ["none", "awgn", "rayleigh"], index=["none", "awgn", "rayleigh"].index(default_channel))
         
         image_size = st.number_input("预处理尺寸", min_value=32, max_value=768, value=int(ui_cfg.get("image_size", 256)), step=32)
-        jpeg_quality = st.slider("JPEG 基线质量", min_value=5, max_value=95, value=int(cfg.get("baseline", {}).get("jpeg_quality", 35)))
+        baseline_cfg = cfg.get("baseline", {})
+        default_codec = str(baseline_cfg.get("codec", "jpeg")).lower()
+        if default_codec not in VALID_BASELINE_CODECS:
+            default_codec = "jpeg"
+        baseline_codec = st.selectbox(
+            "传统基线",
+            list(VALID_BASELINE_CODECS),
+            index=list(VALID_BASELINE_CODECS).index(default_codec),
+            format_func=lambda value: value.upper(),
+        )
+        jpeg_quality = int(baseline_cfg.get("jpeg_quality", 35))
+        bpg_qp = int(baseline_cfg.get("bpg_qp", 29))
+        if baseline_codec == "jpeg":
+            jpeg_quality = st.slider("JPEG 基线质量", min_value=5, max_value=95, value=jpeg_quality)
+        else:
+            bpg_qp = st.slider("BPG QP", min_value=0, max_value=51, value=bpg_qp)
         
         trusted_dir = Path(ui_cfg.get("trusted_checkpoint_dir", "outputs"))
         available_checkpoints = []
@@ -137,7 +153,14 @@ def main() -> None:
         return
         
     tensor = pil_to_tensor(image, image_size=int(image_size))
-    result = run_inference(model, tensor, ChannelConfig(channel_type, float(snr_db)), jpeg_quality=jpeg_quality)
+    result = run_inference(
+        model,
+        tensor,
+        ChannelConfig(channel_type, float(snr_db)),
+        jpeg_quality=jpeg_quality,
+        baseline_codec=baseline_codec,
+        bpg_qp=bpg_qp,
+    )
     col1, col2, col3 = st.columns(3)
     with col1:
         st.subheader("发送原图")
@@ -149,7 +172,7 @@ def main() -> None:
         st.metric("SSIM", f"{result.deepsc_metrics['ssim']:.4f}")
         st.metric("端到端延迟", f"{result.latency_ms:.1f} ms")
     with col3:
-        st.subheader("传统 JPEG+信道基线")
+        st.subheader(f"传统 {result.baseline_codec.upper()}+信道基线")
         st.image(tensor_to_pil(result.baseline), use_container_width=True)
         st.metric("PSNR", f"{result.baseline_metrics['psnr']:.2f} dB")
         st.metric("SSIM", f"{result.baseline_metrics['ssim']:.4f}")
