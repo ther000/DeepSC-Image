@@ -1,2 +1,0 @@
-snr_db,channel,deepsc_psnr,deepsc_ssim,jpeg_psnr,jpeg_ssim,bpg_psnr,bpg_ssim,samples,monte_carlo_samples,repetitions,bandwidth_estimate
-0.0,none,13.54384962717692,0.3875718383739392,33.54435642560323,0.9708309421936671,36.70877321561178,0.9847488924860954,24,1,24,"{'input_shape': (3, 32, 32), 'semantic_shape': (32, 8, 8), 'downsampling_factor': 4, 'input_scalars': 3072, 'semantic_symbols': 2048, 'bandwidth_ratio': 0.6666666666666666, 'compression_ratio': 1.5}"

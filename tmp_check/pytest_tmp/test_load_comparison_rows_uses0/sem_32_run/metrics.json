@@ -1,1 +1,0 @@
-[{"snr_db": -5.0, "channel": "awgn", "deepsc_psnr": 15.0, "deepsc_ssim": 0.5, "semantic_channels": 32}, {"snr_db": 0.0, "channel": "awgn", "deepsc_psnr": 20.0, "deepsc_ssim": 0.55, "semantic_channels": 32}, {"snr_db": 5.0, "channel": "awgn", "deepsc_psnr": 25.0, "deepsc_ssim": 0.6, "semantic_channels": 32}]

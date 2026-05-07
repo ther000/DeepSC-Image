@@ -1,4 +1,0 @@
-snr_db,channel,deepsc_psnr,deepsc_ssim,jpeg_psnr,jpeg_ssim,bpg_psnr,bpg_ssim,samples,monte_carlo_samples,repetitions,bandwidth_estimate
--5.0,awgn,18.2,0.52,16.1,0.44,15.8,0.42,2,1,2,0
-0.0,awgn,20.3,0.61,18.5,0.54,18.1,0.52,2,1,2,0
-10.0,awgn,24.8,0.82,22.0,0.77,21.7,0.75,2,1,2,0
