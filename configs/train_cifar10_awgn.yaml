@@ -13,8 +13,8 @@ channel:
   type: awgn
   train_snr_db: [0, 5, 10, 15, 20]
 training:
-  epochs: 100
-  batch_size: 64
+  epochs: 500
+  batch_size: 128
   learning_rate: 0.001
   weight_decay: 0.0001
   ssim_weight: 0.2
@@ -22,7 +22,7 @@ training:
     enabled: false
     dtype: float16
   dataloader:
-    num_workers: 0
+    num_workers: 4
     pin_memory: false
     persistent_workers: false
     prefetch_factor: null

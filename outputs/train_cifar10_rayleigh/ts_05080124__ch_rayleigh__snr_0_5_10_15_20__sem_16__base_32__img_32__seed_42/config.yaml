@@ -1,0 +1,56 @@
+seed: 42
+device: auto
+dataset:
+  name: cifar10
+  root: datasets/cifar10
+  image_size: 32
+  download: false
+model:
+  semantic_channels: 16
+  base_channels: 32
+channel:
+  type: rayleigh
+  train_snr_db:
+  - 0
+  - 5
+  - 10
+  - 15
+  - 20
+training:
+  epochs: 500
+  batch_size: 128
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  ssim_weight: 0.2
+  amp:
+    enabled: false
+    dtype: float16
+    requested: false
+    effective: false
+    device_type: cuda
+  dataloader:
+    num_workers: 4
+    pin_memory: false
+    persistent_workers: false
+    prefetch_factor: null
+  artifacts:
+    history_every_epochs: 1
+    plot_every_epochs: 1
+    checkpoint_every_epochs: 1
+  output_dir: outputs/train_cifar10_rayleigh/ts_05080124__ch_rayleigh__snr_0_5_10_15_20__sem_16__base_32__img_32__seed_42
+  base_output_dir: outputs/train_cifar10_rayleigh
+  timestamp: 05080124
+bandwidth_estimate:
+  input_shape:
+  - 3
+  - 32
+  - 32
+  semantic_shape:
+  - 16
+  - 8
+  - 8
+  downsampling_factor: 4
+  input_scalars: 3072
+  semantic_symbols: 1024
+  bandwidth_ratio: 0.3333333333333333
+  compression_ratio: 3.0
