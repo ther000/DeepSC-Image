@@ -1,0 +1,248 @@
+[
+  {
+    "snr_db": -5.0,
+    "channel": "awgn",
+    "deepsc_psnr": 19.151343536376952,
+    "deepsc_ssim": 0.4968096780280272,
+    "baseline_codecs": [
+      "jpeg",
+      "bpg"
+    ],
+    "semantic_channels": 32,
+    "image_size": 256,
+    "jpeg_quality": 95,
+    "bpg_qp": 0,
+    "samples": 24,
+    "monte_carlo_samples": 5,
+    "repetitions": 120,
+    "bandwidth_estimate": {
+      "input_shape": [
+        3,
+        256,
+        256
+      ],
+      "semantic_shape": [
+        32,
+        64,
+        64
+      ],
+      "downsampling_factor": 4,
+      "input_scalars": 196608,
+      "semantic_symbols": 131072,
+      "bandwidth_ratio": 0.6666666666666666,
+      "compression_ratio": 1.5
+    },
+    "jpeg_psnr": 11.430172403653463,
+    "jpeg_ssim": 0.11061325430249175,
+    "bpg_psnr": 11.43857307434082,
+    "bpg_ssim": 0.11109457919374108,
+    "baseline_codec": "jpeg",
+    "baseline_psnr": 11.430172403653463,
+    "baseline_ssim": 0.11061325430249175
+  },
+  {
+    "snr_db": 0.0,
+    "channel": "awgn",
+    "deepsc_psnr": 27.048495944341024,
+    "deepsc_ssim": 0.819662935535113,
+    "baseline_codecs": [
+      "jpeg",
+      "bpg"
+    ],
+    "semantic_channels": 32,
+    "image_size": 256,
+    "jpeg_quality": 95,
+    "bpg_qp": 0,
+    "samples": 24,
+    "monte_carlo_samples": 5,
+    "repetitions": 120,
+    "bandwidth_estimate": {
+      "input_shape": [
+        3,
+        256,
+        256
+      ],
+      "semantic_shape": [
+        32,
+        64,
+        64
+      ],
+      "downsampling_factor": 4,
+      "input_scalars": 196608,
+      "semantic_symbols": 131072,
+      "bandwidth_ratio": 0.6666666666666666,
+      "compression_ratio": 1.5
+    },
+    "jpeg_psnr": 15.468802054723104,
+    "jpeg_ssim": 0.21269010448207457,
+    "bpg_psnr": 15.488833610216776,
+    "bpg_ssim": 0.21409728601574898,
+    "baseline_codec": "jpeg",
+    "baseline_psnr": 15.468802054723104,
+    "baseline_ssim": 0.21269010448207457
+  },
+  {
+    "snr_db": 5.0,
+    "channel": "awgn",
+    "deepsc_psnr": 32.20456493695577,
+    "deepsc_ssim": 0.9437056655685107,
+    "baseline_codecs": [
+      "jpeg",
+      "bpg"
+    ],
+    "semantic_channels": 32,
+    "image_size": 256,
+    "jpeg_quality": 95,
+    "bpg_qp": 0,
+    "samples": 24,
+    "monte_carlo_samples": 5,
+    "repetitions": 120,
+    "bandwidth_estimate": {
+      "input_shape": [
+        3,
+        256,
+        256
+      ],
+      "semantic_shape": [
+        32,
+        64,
+        64
+      ],
+      "downsampling_factor": 4,
+      "input_scalars": 196608,
+      "semantic_symbols": 131072,
+      "bandwidth_ratio": 0.6666666666666666,
+      "compression_ratio": 1.5
+    },
+    "jpeg_psnr": 20.079232740402222,
+    "jpeg_ssim": 0.3699463468044996,
+    "bpg_psnr": 20.122772630055746,
+    "bpg_ssim": 0.37264243910710015,
+    "baseline_codec": "jpeg",
+    "baseline_psnr": 20.079232740402222,
+    "baseline_ssim": 0.3699463468044996
+  },
+  {
+    "snr_db": 10.0,
+    "channel": "awgn",
+    "deepsc_psnr": 35.22927420934041,
+    "deepsc_ssim": 0.9764628166953723,
+    "baseline_codecs": [
+      "jpeg",
+      "bpg"
+    ],
+    "semantic_channels": 32,
+    "image_size": 256,
+    "jpeg_quality": 95,
+    "bpg_qp": 0,
+    "samples": 24,
+    "monte_carlo_samples": 5,
+    "repetitions": 120,
+    "bandwidth_estimate": {
+      "input_shape": [
+        3,
+        256,
+        256
+      ],
+      "semantic_shape": [
+        32,
+        64,
+        64
+      ],
+      "downsampling_factor": 4,
+      "input_scalars": 196608,
+      "semantic_symbols": 131072,
+      "bandwidth_ratio": 0.6666666666666666,
+      "compression_ratio": 1.5
+    },
+    "jpeg_psnr": 24.807515891393027,
+    "jpeg_ssim": 0.5648241316278776,
+    "bpg_psnr": 24.94434700012207,
+    "bpg_ssim": 0.5709889811774095,
+    "baseline_codec": "jpeg",
+    "baseline_psnr": 24.807515891393027,
+    "baseline_ssim": 0.5648241316278776
+  },
+  {
+    "snr_db": 15.0,
+    "channel": "awgn",
+    "deepsc_psnr": 36.769082387288414,
+    "deepsc_ssim": 0.9856432139873504,
+    "baseline_codecs": [
+      "jpeg",
+      "bpg"
+    ],
+    "semantic_channels": 32,
+    "image_size": 256,
+    "jpeg_quality": 95,
+    "bpg_qp": 0,
+    "samples": 24,
+    "monte_carlo_samples": 5,
+    "repetitions": 120,
+    "bandwidth_estimate": {
+      "input_shape": [
+        3,
+        256,
+        256
+      ],
+      "semantic_shape": [
+        32,
+        64,
+        64
+      ],
+      "downsampling_factor": 4,
+      "input_scalars": 196608,
+      "semantic_symbols": 131072,
+      "bandwidth_ratio": 0.6666666666666666,
+      "compression_ratio": 1.5
+    },
+    "jpeg_psnr": 29.347319825490317,
+    "jpeg_ssim": 0.7513992677132288,
+    "bpg_psnr": 29.73732089996338,
+    "bpg_ssim": 0.7619815429051717,
+    "baseline_codec": "jpeg",
+    "baseline_psnr": 29.347319825490317,
+    "baseline_ssim": 0.7513992677132288
+  },
+  {
+    "snr_db": 20.0,
+    "channel": "awgn",
+    "deepsc_psnr": 37.39819513956706,
+    "deepsc_ssim": 0.9884050453702609,
+    "baseline_codecs": [
+      "jpeg",
+      "bpg"
+    ],
+    "semantic_channels": 32,
+    "image_size": 256,
+    "jpeg_quality": 95,
+    "bpg_qp": 0,
+    "samples": 24,
+    "monte_carlo_samples": 5,
+    "repetitions": 120,
+    "bandwidth_estimate": {
+      "input_shape": [
+        3,
+        256,
+        256
+      ],
+      "semantic_shape": [
+        32,
+        64,
+        64
+      ],
+      "downsampling_factor": 4,
+      "input_scalars": 196608,
+      "semantic_symbols": 131072,
+      "bandwidth_ratio": 0.6666666666666666,
+      "compression_ratio": 1.5
+    },
+    "jpeg_psnr": 33.239907344182335,
+    "jpeg_ssim": 0.8781006420652072,
+    "bpg_psnr": 34.26068166097005,
+    "bpg_ssim": 0.8925040334463119,
+    "baseline_codec": "jpeg",
+    "baseline_psnr": 33.239907344182335,
+    "baseline_ssim": 0.8781006420652072
+  }
+]
